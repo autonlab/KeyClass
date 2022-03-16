@@ -6,7 +6,7 @@ TODOs:
 - [ ] Add tutorial(s)
 - [ ] Add the 1-3 line code snippet
 - [ ] Complete Readme
-- [ ] 
+
 <!--- ![](https://raw.githubusercontent.com/cleanlab/assets/master/cleanlab/cleanlab_logo.png)--->
 
 `KeyClass` is a data-centric AI package for text classification withe label-names (and descriptions) only.
