@@ -1,13 +1,17 @@
+import sys
+sys.path.append('../keyclass/')
+
 import argparse
 from os.path import join
 from utils import fetch_data
+from encoder import Encoder
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--data_path', default='/zfsauton/project/public/chufang/classes/',
                     help='dataset directory')
 parser.add_argument('--dataset', default='imdb',
                     help='dataset')
-parser.add_argument('--model_name', default='all-mpnet-base-v2'
+parser.add_argument('--model_name', default='all-mpnet-base-v2',
                     help='Sentence Encoder model to use')
 args = parser.parse_args()
 
