@@ -3,7 +3,8 @@ sys.path.append('../keyclass/')
 
 import argparse
 from os.path import join
-from utils import fetch_data, Encoder
+from utils import fetch_data
+from models import Encoder
 import torch
 import pickle
 

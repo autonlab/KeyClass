@@ -29,7 +29,7 @@ if __name__=='__main__':
     topk=300
     label_model_lr=0.001
     label_model_n_epochs=400
-    save_results_path = './results/'+dataset+'/'
+    save_results_path = '../results/'+dataset+'/'
     # end of params ---------------------------------------------------------------
     
     # load training data
