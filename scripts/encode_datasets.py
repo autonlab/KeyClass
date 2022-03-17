@@ -3,8 +3,9 @@ sys.path.append('../keyclass/')
 
 import argparse
 from os.path import join
-from utils import fetch_data
-from encoder import Encoder
+from utils import fetch_data, Encoder
+import torch
+import pickle
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--data_path', default='/zfsauton/project/public/chufang/classes/',
@@ -20,5 +21,5 @@ model = Encoder(model_name=args.model_name, device='cuda' if torch.cuda.is_avail
 for split in ['train', 'test']:
     text = fetch_data(dataset=args.dataset, split=split, path=args.data_path)
     embeddings = model.get_embeddings(text=text, batch_size=128)
-    with open(join(data_path, dataset, f'{split}_embeddings.pkl'), 'wb') as f:
+    with open(join(args.data_path, args.dataset, f'{split}_embeddings.pkl'), 'wb') as f:
         pickle.dump(embeddings, f)

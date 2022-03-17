@@ -1,6 +1,10 @@
 from os.path import join
 import re
 import torch
+from transformers import AutoTokenizer, AutoModel
+from sentence_transformers import SentenceTransformer
+import numpy as np
+from tqdm import tqdm
 
 def mean_pooling(model_output, attention_mask):
     token_embeddings = model_output[0] #First element of model_output contains all token embeddings
@@ -40,8 +44,8 @@ def fetch_data(dataset='imdb', path='~/', split='train'):
 	        Whether to fetch the train or test dataset. Options are one of 'train' or 'test'. 
     """
     _dataset_names = ['agnews', 'amazon', 'dbpedia', 'imdb', 'mimic'] 
-    if dataset not in dataset_names:
-        raise ValueError(f'Dataset must be one of {dataset_names}, but received {dataset}.')
+    if dataset not in _dataset_names:
+        raise ValueError(f'Dataset must be one of {_dataset_names}, but received {dataset}.')
     if split not in ['train', 'test']:
         raise ValueError(f'split must be one of \'train\' or \'test\', but received {split}.')
 
@@ -51,3 +55,47 @@ def fetch_data(dataset='imdb', path='~/', split='train'):
         text = [cleantext(line) for line in text]
 
     return text 
+
+class Encoder:
+    def __init__(self, model_name='all-mpnet-base-v2', device = "cuda"):
+        """Encoder class returns an instance of a sentence transformer.
+            
+            
+            https://www.sbert.net/docs/pretrained_models.html
+            
+            Parameters
+            ---------- 
+            model_name: str
+                The pre-trained tranformer model to use for encoding text. 
+            device: str
+                Device to use for encoding. 'cuda' by default. 
+        """
+        self.model_name = model_name
+        if self.model_name == 'bluebert':
+            self.tokenizer = AutoTokenizer.from_pretrained("bionlp/bluebert_pubmed_mimic_uncased_L-12_H-768_A-12")
+            self.model = AutoModel.from_pretrained("bionlp/bluebert_pubmed_mimic_uncased_L-12_H-768_A-12")
+            if device=='cuda':
+                self.model = self.model.cuda()
+        else:
+            self.model = SentenceTransformer(model_name_or_path=model_name, device=device)
+            
+    
+    def get_embeddings(self, text, batch_size=32):
+        """Encode text.
+        
+        Parameters
+        ---------- 
+        text: list
+            List of text to be encoded.
+        """
+        
+        if self.model_name == 'bluebert':
+            embeddings = [] 
+            for i in tqdm(range(0, len(text), batch_size)):
+                embeddings.append(encode(self.model, self.tokenizer, text[i:i+batch_size]))
+            embeddings = np.concatenate(embeddings)
+
+        else:
+            embeddings = self.model.encode(text, convert_to_numpy=True, show_progress_bar=True, batch_size=batch_size)
+        
+        return embeddings    
