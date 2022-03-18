@@ -77,4 +77,4 @@ if __name__=='__main__':
 
     if not os.path.exists(save_results_path):
         os.makedirs(save_results_path)
-    pickle.dump(proba_preds, open(save_results_path+'proba_preds.pkl', 'wb'))
+    pickle.dump(proba_preds, open(save_results_path+'label_proba_preds.pkl', 'wb'))
