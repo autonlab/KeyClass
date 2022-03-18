@@ -63,11 +63,11 @@ class Encoder(torch.nn.Module):
 
 
 
-class FeedforwardFlexibleRawText(torch.nn.Module):
+class TorchMLP(torch.nn.Module):
     def __init__(self, h_sizes, activation, 
                  encoder_model, 
-                 device="cuda"):
-        super(FeedforwardFlexibleRawText, self).__init__()
+                 device="cpu"):
+        super(TorchMLP, self).__init__()
 
         self.encoder_model = encoder_model
         self.device = device
@@ -76,9 +76,12 @@ class FeedforwardFlexibleRawText(torch.nn.Module):
             self.layers.append(torch.nn.Linear(h_sizes[k], h_sizes[k+1]))
             self.layers.append(activation)
             self.layers.append(torch.nn.Dropout(p=0.5))
+
+        self.to(device)
     
-    def forward(self, x, mode='inference'):
-        x = self.encoder_model.forward(x)
+    def forward(self, x, mode='inference', raw_text=True):
+        if raw_text:
+            x = self.encoder_model.forward(x)
         
         for layer in self.layers:
             x = layer(x)
@@ -99,12 +102,15 @@ class FeedforwardFlexibleRawText(torch.nn.Module):
         
     def predict_proba(self, Xtest, batch_size=128):
         with torch.no_grad():
-            self.model.eval()
+
+            # if isinstance(Xtest, np.ndarray):
+            #     Xtest = torch.from_numpy(Xtest)
+
+            self.eval()
             probs_list = []
-            self.model.to(self.device)            
             N = len(Xtest)
             
             for i in tqdm(range(0, N, batch_size)):
-                probs = self.model.forward(Xtest[i:i+batch_size], mode='inference').cpu().numpy()
+                probs = self.forward(Xtest[i:i+batch_size], mode='inference').cpu().numpy()
                 probs_list.append(probs)
         return np.concatenate(probs_list, axis=0)

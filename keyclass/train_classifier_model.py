@@ -1,7 +1,8 @@
 # add functions for training and self training
+from curses import raw
 import torch
 import numpy as np
-import tqdm
+from tqdm import tqdm
 import copy
 
 def get_q_soft(p):
@@ -10,12 +11,16 @@ def get_q_soft(p):
     return q
 
 
-def train_classifier(model, device, raw_text, X_train, y_train, epochs, batch_size, criterion, opimizer='Adam', lr=1e-3, weight_decay=1e-4, patience=2):
+def train(model, device, X_train, y_train, epochs, batch_size, criterion, raw_text, lr=1e-3, weight_decay=1e-4, patience=2):
+    if isinstance(y_train, np.ndarray):
+        y_train = torch.from_numpy(y_train)
 
-    optimizer = torch.optim.Adam(model.parameters(), lr=1e-3, weight_decay=1e-4)
+    if raw_text==False and isinstance(X_train, np.ndarray):
+        X_train = torch.from_numpy(X_train)
+
+    optimizer = torch.optim.Adam(model.parameters(), lr=lr, weight_decay=weight_decay)
     scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.9)
 
-    model = model.to(device)
     model = model.train()
 
     best_loss = np.inf
@@ -30,11 +35,12 @@ def train_classifier(model, device, raw_text, X_train, y_train, epochs, batch_si
         for i in range(0, N, batch_size):
             optimizer.zero_grad()
             indices = permutation[i:i+batch_size]
-            batch_x, batch_y = X_train[indices], y_train[indices].to(device)
-                        
+                
+            batch_x, batch_y = X_train[indices], y_train[indices]
             batch_y = batch_y.to(device)
-            
-            out = model(batch_x, mode='inference', raw_text=raw_text)
+            if raw_text == False: batch_x = batch_x.to(device)
+
+            out = model.forward(batch_x, mode='inference', raw_text=raw_text)
 
             loss = criterion(out, batch_y)
             loss = loss.mean()
@@ -53,7 +59,6 @@ def train_classifier(model, device, raw_text, X_train, y_train, epochs, batch_si
                 tolcount = 0
                 best_state_dict = copy.deepcopy(model.state_dict())
 
-                # torch.save(model, 'best_model.pt')
             else: # loss.cpu().detach().numpy() > best_loss:
                 tolcount += 1
 
@@ -107,7 +112,7 @@ def self_train(model, X_train, X_val, y_val, device, lr=1e-5, weight_decay=1e-4,
 
         for i in range(0, batch_size*q_update_interval, batch_size):
             batch_x = X_train[inds][i:i+batch_size]
-            batch_q = target_dist[i:i+batch_size].to(self.device)
+            batch_q = target_dist[i:i+batch_size].to(device)
             
             out = model.forward(batch_x, mode='self_train')
             loss = criterion(out, batch_q)
