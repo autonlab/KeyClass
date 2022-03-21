@@ -1,0 +1,34 @@
+# IMDb dataset
+---
+data_path: '/zfsauton/project/public/chufang/classes/'
+dataset: 'imdb'
+base_encoder: 'all-mpnet-base-v2'
+# Vocabulary count vectorizer arguments
+topk: 300
+ngram_range: (1,3)
+min_df: 0.001
+# Label model arguments
+save_LM_preds_path: '../results/imdb/'
+label_model_lr: 0.01
+label_model_n_epochs: 100
+# Label descriptions (start with target)
+target_positive: 'negative, hate, expensive, bad, poor, broke, waste, horrible, would not recommend' 
+target_negative: 'good, positive, excellent, amazing, love, fine, good quality, would recommend'
+# ---
+# Start a new file here.
+
+# if dataset == 'imdb':
+#     label_names = ['negative, hate, expensive, bad, poor, broke, waste, horrible, would not recommend', 
+#         'good, positive, excellent, amazing, love, fine, good quality, would recommend']
+
+# elif dataset == 'agnews':
+#     label_names = ['politics', 'sports', 'business', 'technology']
+
+# elif dataset == 'amazon':
+#     label_names = ['negative, hate, expensive, bad, poor, broke, waste, horrible, would not recommend', 
+#         'good, positive, excellent, amazing, love, fine, good quality, would recommend']
+
+# elif dataset == 'dbpedia':
+#     label_names = ['company', 'school university', 'artist', 'athlete', 'politics',
+#         'transportation', 'building structure tower', 'lake river mountain',  'village town rural settlement', 'animal mammal',
+#         'plant, wood, tree', 'album record music audio', 'film movie actor', 'book novel publication']
