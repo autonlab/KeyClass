@@ -21,7 +21,7 @@ from config import Parser
 parser = Parser()
 args = parser.parse()
 
-model = Encoder(model_name=args.model_name, device='cuda' if torch.cuda.is_available() else 'cpu')
+model = Encoder(model_name=args.base_encoder, device='cuda' if torch.cuda.is_available() else 'cpu')
 
 for split in ['train', 'test']:
     text = fetch_data(dataset=args.dataset, split=split, path=args.data_path)
