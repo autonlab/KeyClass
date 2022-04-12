@@ -3,7 +3,7 @@ from yaml import CLoader as Loader, CDumper as Dumper
 
 class Parser:
 	def __init__(self, config_file_path='../default_config.yml', 
-				 default_config_file_path='../default_config.yml'):
+		     default_config_file_path='../default_config.yml'):
 		"""Class to read and parse the config.yml file
 		"""
 		self.config_file_path = config_file_path
