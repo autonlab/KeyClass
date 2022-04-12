@@ -3,10 +3,14 @@ from sentence_transformers import SentenceTransformer
 import sentence_transformers.util
 import numpy as np
 from tqdm import tqdm
+from tqdm.autonotebook import trange
 import torch
+import logging 
+
+logger = logging.getLogger(__name__)
 
 class Encoder(torch.nn.Module):
-    def __init__(self, model_name='all-mpnet-base-v2', device="cpu"):
+    def __init__(self, model_name: str ='all-mpnet-base-v2', device: str = "cpu"):
         """Encoder class returns an instance of a sentence transformer.
             https://www.sbert.net/docs/pretrained_models.html
             
@@ -25,43 +29,68 @@ class Encoder(torch.nn.Module):
 
         self.to(device)
 
-    def get_embeddings(self, text, batch_size=32):
+    def encode(self, sentences, batch_size: int = 32, 
+               show_progress_bar: bool = None, 
+               normalize_embeddings: bool = False):
         """
-        Computes sentence embeddings, follows the logic from sentence transformers
-        :param text: the text to embed
-        :return:
-           By default, a list of tensors is returned. If convert_to_tensor, a stacked tensor is returned. If convert_to_numpy, a numpy matrix is returned.
+        Computes sentence embeddings using the forward function
 
+        Parameters
+        ---------- 
+        text: the text to embed
+        batch_size: the batch size used for the computation
         """
-        embeddings = [] 
+        self.model.eval() # Set model in evaluation mode. 
         with torch.no_grad():
-            for i in tqdm(range(0, len(text), batch_size)):
-                embeddings.append(self.forward(text[i:i+batch_size]).cpu().numpy())
-        embeddings = np.concatenate(embeddings)
-
+            embeddings = self.forward(sentences, batch_size=batch_size, 
+                                      show_progress_bar=show_progress_bar, 
+                                      normalize_embeddings=normalize_embeddings).detach().cpu().numpy()
+        self.model.train()
         return embeddings
 
-    def forward(self, sentences):
-        # cannot use encode due to torch no_grad in sentence transformers
-#         x = self.model.encode(x, convert_to_numpy=False, convert_to_tensor=True, batch_size=len(x), show_progress_bar=False)
+    def forward(self, sentences, batch_size: int = 32, 
+                show_progress_bar: bool = None, 
+                normalize_embeddings: bool = False):
+        """
+        Computes sentence embeddings
+
+        
+        Parameters
+        ---------- 
+        text: the text to embed
+        batch_size: the batch size used for the computation
+        show_progress_bar: Output a progress bar when encode sentences
+        normalize_embeddings: If set to true, returned vectors will have length 1. In that case, the faster dot-product (util.dot_score) instead of cosine similarity can be used.
+        """
+        # Cannot use encode due to torch no_grad in sentence transformers
+        # x = self.model.encode(x, convert_to_numpy=False, convert_to_tensor=True, batch_size=len(x), show_progress_bar=False)
+        # Logic from https://github.com/UKPLab/sentence-transformers/blob/8822bc4753849f816575ab95261f5c6ab7c71d01/sentence_transformers/SentenceTransformer.py#L110
+        
+        if show_progress_bar is None:
+            show_progress_bar = (logger.getEffectiveLevel()==logging.INFO or logger.getEffectiveLevel()==logging.DEBUG)
+
         all_embeddings = []
 
         length_sorted_idx = np.argsort([-self.model._text_length(sen) for sen in sentences])
         sentences_sorted = [sentences[idx] for idx in length_sorted_idx]
 
-        features = self.model.tokenize(sentences_sorted)
-        features = sentence_transformers.util.batch_to_device(features, self.device)
+        for start_index in trange(0, len(sentences), batch_size, desc="Batches", disable=not show_progress_bar):
+            sentences_batch = sentences_sorted[start_index:start_index+batch_size]
+            features = self.model.tokenize(sentences_batch)
+            features = sentence_transformers.util.batch_to_device(features, self.device)
 
-        out_features = self.model.forward(features)
-        embeddings = out_features['sentence_embedding']
-        all_embeddings.extend(embeddings)
+            out_features = self.model.forward(features)
+            
+            embeddings = out_features['sentence_embedding']
+            if normalize_embeddings:
+                embeddings = torch.nn.functional.normalize(embeddings, p=2, dim=1)
+            
+            all_embeddings.extend(embeddings)
 
         all_embeddings = [all_embeddings[idx] for idx in np.argsort(length_sorted_idx)]
-        all_embeddings = torch.stack(all_embeddings)
+        all_embeddings = torch.stack(all_embeddings) # Converts to tensor
 
         return all_embeddings
-
-
 
 class TorchMLP(torch.nn.Module):
     def __init__(self, h_sizes, activation, 

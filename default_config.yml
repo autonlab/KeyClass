@@ -13,3 +13,6 @@ target_negative: negative, hate, expensive, bad, poor, broke, waste, horrible, w
 target_positive: good, positive, excellent, amazing, love, fine, good quality, would
   recommend
 topk: 300
+batch_size: 128
+normalize_embeddings: False
+show_progress_bar: True

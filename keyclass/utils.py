@@ -56,46 +56,46 @@ def fetch_data(dataset='imdb', path='~/', split='train'):
 
     return text 
 
-class Encoder:
-    def __init__(self, base_encoder='all-mpnet-base-v2', device = "cuda"):
-        """Encoder class returns an instance of a sentence transformer.
+# class Encoder:
+#     def __init__(self, base_encoder='all-mpnet-base-v2', device = "cuda"):
+#         """Encoder class returns an instance of a sentence transformer.
             
             
-            https://www.sbert.net/docs/pretrained_models.html
+#             https://www.sbert.net/docs/pretrained_models.html
             
-            Parameters
-            ---------- 
-            base_encoder: str
-                The pre-trained tranformer model to use for encoding text. 
-            device: str
-                Device to use for encoding. 'cuda' by default. 
-        """
-        self.base_encoder = base_encoder
-        if self.base_encoder == 'bluebert':
-            self.tokenizer = AutoTokenizer.from_pretrained("bionlp/bluebert_pubmed_mimic_uncased_L-12_H-768_A-12")
-            self.model = AutoModel.from_pretrained("bionlp/bluebert_pubmed_mimic_uncased_L-12_H-768_A-12")
-            if device=='cuda':
-                self.model = self.model.cuda()
-        else:
-            self.model = SentenceTransformer(model_name_or_path=base_encoder, device=device)
+#             Parameters
+#             ---------- 
+#             base_encoder: str
+#                 The pre-trained tranformer model to use for encoding text. 
+#             device: str
+#                 Device to use for encoding. 'cuda' by default. 
+#         """
+#         self.base_encoder = base_encoder
+#         if self.base_encoder == 'bluebert':
+#             self.tokenizer = AutoTokenizer.from_pretrained("bionlp/bluebert_pubmed_mimic_uncased_L-12_H-768_A-12")
+#             self.model = AutoModel.from_pretrained("bionlp/bluebert_pubmed_mimic_uncased_L-12_H-768_A-12")
+#             if device=='cuda':
+#                 self.model = self.model.cuda()
+#         else:
+#             self.model = SentenceTransformer(model_name_or_path=base_encoder, device=device)
             
     
-    def get_embeddings(self, text, batch_size=32):
-        """Encode text.
+#     def get_embeddings(self, text, batch_size=32):
+#         """Encode text.
         
-        Parameters
-        ---------- 
-        text: list
-            List of text to be encoded.
-        """
+#         Parameters
+#         ---------- 
+#         text: list
+#             List of text to be encoded.
+#         """
         
-        if self.base_encoder == 'bluebert':
-            embeddings = [] 
-            for i in tqdm(range(0, len(text), batch_size)):
-                embeddings.append(encode(self.model, self.tokenizer, text[i:i+batch_size]))
-            embeddings = np.concatenate(embeddings)
+#         if self.base_encoder == 'bluebert':
+#             embeddings = [] 
+#             for i in tqdm(range(0, len(text), batch_size)):
+#                 embeddings.append(encode(self.model, self.tokenizer, text[i:i+batch_size]))
+#             embeddings = np.concatenate(embeddings)
 
-        else:
-            embeddings = self.model.encode(text, convert_to_numpy=True, show_progress_bar=True, batch_size=batch_size)
+#         else:
+#             embeddings = self.model.encode(text, convert_to_numpy=True, show_progress_bar=True, batch_size=batch_size)
         
-        return embeddings    
+#         return embeddings    
