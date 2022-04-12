@@ -43,7 +43,7 @@ proba_preds = labeler.get_labels(text_corpus=train_text, label_names=label_names
 y_train_pred = np.argmax(proba_preds, axis=1)
 
 print('Label Model Training Accuracy', np.mean(y_train_pred==y_train))
-print('Label Model Predictions: Unique and Counts', np.unique(y_train_pred, return_counts=True)
+print('Label Model Predictions: Unique and Counts', np.unique(y_train_pred, return_counts=True))
 if not os.path.exists(args['save_results_path']): os.makedirs(args['save_results_path'])
-with open(join(args['save_results_path'], 'proba_preds.pkl'), 'wb')) as f:
+with open(join(args['save_results_path'], 'proba_preds.pkl'), 'wb') as f:
     pickle.dump(proba_preds, f)

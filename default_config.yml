@@ -6,9 +6,12 @@ label_model_n_epochs: 100
 # Label descriptions (start with target)
 target_negative: 'negative, hate, expensive, bad, poor, broke, waste, horrible, would not recommend' 
 target_positive: 'good, positive, excellent, amazing, love, fine, good quality, would recommend'
-# ---
-# Start a new file here.
+min_df: 0.001
+ngram_range: (1,3)
+save_LM_preds_path: ../results/imdb/
+topk: 300
 
+# ---
 # if dataset == 'imdb':
 #     label_names = ['negative, hate, expensive, bad, poor, broke, waste, horrible, would not recommend', 
 #         'good, positive, excellent, amazing, love, fine, good quality, would recommend']
@@ -24,7 +27,3 @@ target_positive: 'good, positive, excellent, amazing, love, fine, good quality, 
 #     label_names = ['company', 'school university', 'artist', 'athlete', 'politics',
 #         'transportation', 'building structure tower', 'lake river mountain',  'village town rural settlement', 'animal mammal',
 #         'plant, wood, tree', 'album record music audio', 'film movie actor', 'book novel publication']
-min_df: 0.001
-ngram_range: (1,3)
-save_LM_preds_path: ../results/imdb/
-topk: 300
