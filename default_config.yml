@@ -12,8 +12,8 @@ save_LM_preds_path: '../results/imdb/'
 label_model_lr: 0.01
 label_model_n_epochs: 100
 # Label descriptions (start with target)
-target_positive: 'negative, hate, expensive, bad, poor, broke, waste, horrible, would not recommend' 
-target_negative: 'good, positive, excellent, amazing, love, fine, good quality, would recommend'
+target_negative: 'negative, hate, expensive, bad, poor, broke, waste, horrible, would not recommend' 
+target_positive: 'good, positive, excellent, amazing, love, fine, good quality, would recommend'
 # ---
 # Start a new file here.
 
