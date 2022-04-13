@@ -18,3 +18,5 @@ normalize_embeddings: False
 show_progress_bar: True
 lr: 1e-3
 weight_decay: 1e-4
+patience: 3
+epochs: 200

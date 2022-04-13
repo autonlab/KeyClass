@@ -1,4 +1,3 @@
-# add functions for training and self training
 from curses import raw
 import torch
 from typing import List, Dict, Tuple, Iterable, Type, Union, Callable, Optional
@@ -73,7 +72,6 @@ def train(model: torch.nn.Module,
             if raw_text == False: batch_x = batch_x.to(device)
 
             out = model.forward(batch_x, mode='inference', raw_text=raw_text)
-
             loss = criterion(out, batch_y)
             loss = loss.mean()
                         
