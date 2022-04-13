@@ -16,3 +16,5 @@ topk: 300
 batch_size: 128
 normalize_embeddings: False
 show_progress_bar: True
+lr: 1e-3
+weight_decay: 1e-4

@@ -1,21 +1,51 @@
 # add functions for training and self training
 from curses import raw
 import torch
+from typing import List, Dict, Tuple, Iterable, Type, Union, Callable, Optional
 import numpy as np
 from tqdm import tqdm
 import copy
 
-def get_q_soft(p):
+def get_q_soft(p: torch.tensor):
+    """Get target distribution for model refinement via self-training. 
+
+    Soft labeling (Xie et al., 2016) derives Q by enhancing high-confidence predictions while
+    demoting low-confidence ones via squaring and normalizing the current predictions.
+
+    Parameters
+    ----------
+    p: Current predictions of the model.
+
+    References
+    ----------
+    Junyuan Xie, Ross B. Girshick, and Ali Farhadi. 2016. Unsupervised deep embedding for clustering analysis. In ICML.
+    """
     q = torch.square(p) / torch.sum(p, dim=0, keepdim=True)
     q = q / torch.sum(q, dim=1, keepdim=True)
     return q
 
 
-def train(model, device, X_train, y_train, epochs, batch_size, criterion, raw_text, lr=1e-3, weight_decay=1e-4, patience=2):
+def train(model: torch.nn.Module, 
+          device: torch.device = torch.device("cuda"),
+          X_train: Union[Union[str, List[str]], np.ndarray], 
+          y_train: Union[torch.Tensor, np.ndarray], 
+          epochs: int = 200, 
+          batch_size: int = 128, 
+          criterion: Callable = torch.nn.CrossEntropyLoss(reduction='none'), 
+          raw_text: bool = False, 
+          lr: float = 1e-3, 
+          weight_decay: float = 1e-4, 
+          patience: int = 2):
+    """Function to train the encoder along with fully connected layers. 
+
+    Parameters
+    ----------
+
+    """
     if isinstance(y_train, np.ndarray):
         y_train = torch.from_numpy(y_train)
 
-    if raw_text==False and isinstance(X_train, np.ndarray):
+    if raw_text == False and isinstance(X_train, np.ndarray):
         X_train = torch.from_numpy(X_train)
 
     optimizer = torch.optim.Adam(model.parameters(), lr=lr, weight_decay=weight_decay)
@@ -38,6 +68,8 @@ def train(model, device, X_train, y_train, epochs, batch_size, criterion, raw_te
                 
             batch_x, batch_y = X_train[indices], y_train[indices]
             batch_y = batch_y.to(device)
+            # Since raw text is a list of strings, it cannot be trivially moved to the GPU using the 
+            # .to() method. The base encoder model takes care of this. 
             if raw_text == False: batch_x = batch_x.to(device)
 
             out = model.forward(batch_x, mode='inference', raw_text=raw_text)
@@ -52,8 +84,8 @@ def train(model, device, X_train, y_train, epochs, batch_size, criterion, raw_te
 
         scheduler.step()
             
-        with torch.no_grad(): # # early stopping
-            print('tolcount', tolcount, 'running_loss', running_loss, 'best_loss', best_loss)
+        with torch.no_grad(): # Early stopping
+            print('Tolerance count:', tolcount, 'Running loss:', running_loss, 'Best loss:', best_loss)
             if running_loss <= best_loss:
                 best_loss = running_loss
                 tolcount = 0
@@ -63,8 +95,8 @@ def train(model, device, X_train, y_train, epochs, batch_size, criterion, raw_te
                 tolcount += 1
 
             if tolcount > patience:
-                print('Stopping early')
-                model.load_state_dict(best_state_dict)
+                print('Stopping early...')
+                model.load_state_dict(best_state_dict) # Return the best model
                 
     return model
 

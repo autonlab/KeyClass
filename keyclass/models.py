@@ -1,6 +1,7 @@
 from transformers import AutoTokenizer, AutoModel
 from sentence_transformers import SentenceTransformer
 import sentence_transformers.util
+from typing import List, Dict, Tuple, Iterable, Type, Union, Callable, Optional
 import numpy as np
 from tqdm import tqdm
 from tqdm.autonotebook import trange
@@ -10,7 +11,8 @@ import logging
 logger = logging.getLogger(__name__)
 
 class Encoder(torch.nn.Module):
-    def __init__(self, model_name: str ='all-mpnet-base-v2', device: str = "cpu"):
+    def __init__(self, model_name: str ='all-mpnet-base-v2', 
+                 device: str = "cpu"):
         """Encoder class returns an instance of a sentence transformer.
             https://www.sbert.net/docs/pretrained_models.html
             
@@ -29,8 +31,9 @@ class Encoder(torch.nn.Module):
 
         self.to(device)
 
-    def encode(self, sentences, batch_size: int = 32, 
-               show_progress_bar: bool = None, 
+    def encode(self, sentences: Union[str, List[str]], 
+               batch_size: int = 32, 
+               show_progress_bar: Optional[bool] = None, 
                normalize_embeddings: bool = False):
         """
         Computes sentence embeddings using the forward function
@@ -48,8 +51,9 @@ class Encoder(torch.nn.Module):
         self.model.train()
         return embeddings
 
-    def forward(self, sentences, batch_size: int = 32, 
-                show_progress_bar: bool = None, 
+    def forward(self, sentences: Union[str, List[str]], 
+                batch_size: int = 32, 
+                show_progress_bar: Optional[bool] = None, 
                 normalize_embeddings: bool = False):
         """
         Computes sentence embeddings
@@ -57,7 +61,7 @@ class Encoder(torch.nn.Module):
         
         Parameters
         ---------- 
-        text: the text to embed
+        sentences: the sentences to embed
         batch_size: the batch size used for the computation
         show_progress_bar: Output a progress bar when encode sentences
         normalize_embeddings: If set to true, returned vectors will have length 1. In that case, the faster dot-product (util.dot_score) instead of cosine similarity can be used.
@@ -92,11 +96,23 @@ class Encoder(torch.nn.Module):
 
         return all_embeddings
 
-class TorchMLP(torch.nn.Module):
-    def __init__(self, h_sizes, activation, 
-                 encoder_model, 
-                 device="cpu"):
-        super(TorchMLP, self).__init__()
+class FeedForwardFlexible(torch.nn.Module):
+    def __init__(self, encoder_model: nn.Module,
+                 h_sizes: Iterable[int] = [768, 256, 64, 2], 
+                 activation: torch.nn.Module = torch.nn.LeakyReLU(), 
+                 device: str = "cpu"):
+        super(FeedForwardFlexible, self).__init__()
+        """
+        Flexible feed forward network over a base encoder. 
+
+        
+        Parameters
+        ---------- 
+        encoder_model: The base encoder model
+        h_sizes: Linear layer sizes to be used in the MLP
+        activation: Activation function to be use in the MLP. 
+        device: Device to use for training. 'cpu' by default.
+        """
 
         self.encoder_model = encoder_model
         self.device = device
@@ -115,31 +131,26 @@ class TorchMLP(torch.nn.Module):
         for layer in self.layers:
             x = layer(x)
             
-        if mode=='inference':
+        if mode == 'inference':
             x = torch.nn.Softmax(dim=-1)(x)
-        elif mode=='self_train':
+        elif mode == 'self_train':
             x = torch.nn.LogSoftmax(dim=-1)(x)
-        else:
-            raise AttributeError('invalid mode for forward function')
-
+        
         return x
 
-    def predict(self, Xtest, batch_size=128):
-        preds = self.predict_proba(Xtest, batch_size=batch_size)
+    def predict(self, x_test, batch_size=128):
+        preds = self.predict_proba(x_test, batch_size=batch_size)
         preds = np.argmax(preds, axis=1)
         return preds
         
-    def predict_proba(self, Xtest, batch_size=128):
+    def predict_proba(self, x_test, batch_size=128):
         with torch.no_grad():
-
-            # if isinstance(Xtest, np.ndarray):
-            #     Xtest = torch.from_numpy(Xtest)
-
             self.eval()
             probs_list = []
-            N = len(Xtest)
+            N = len(x_test)
             
             for i in tqdm(range(0, N, batch_size)):
-                probs = self.forward(Xtest[i:i+batch_size], mode='inference').cpu().numpy()
+                probs = self.forward(x_test[i:i+batch_size], mode='inference').cpu().numpy()
                 probs_list.append(probs)
+            self.train()
         return np.concatenate(probs_list, axis=0)
