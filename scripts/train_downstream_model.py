@@ -89,8 +89,8 @@ print(f'Saving model {model_name}...')
 with open(join(args['model_path'], model_name), 'wb') as f:
     torch.save(model, f)
 
-end_model_preds_train = model.predict_proba(X_train_embed_masked, batch_size=512, raw_text=False)
-end_model_preds_test = model.predict_proba(X_test_embed, batch_size=512, raw_text=False)
+end_model_preds_train = model.predict_proba(torch.from_numpy(X_train_embed_masked), batch_size=512, raw_text=False)
+end_model_preds_test = model.predict_proba(torch.from_numpy(X_test_embed), batch_size=512, raw_text=False)
 
 # Save the predictions
 with open(join(args['preds_path'], 'end_model_preds_train.pkl'), 'wb') as f:
@@ -124,7 +124,7 @@ print('\n===== Self-training the downstream classifier =====\n')
 X_train_text = utils.fetch_data(dataset=args['dataset'], path=args['data_path'], split='train')
 X_test_text = utils.fetch_data(dataset=args['dataset'], path=args['data_path'], split='test')
 
-model = self_train(model=model, 
+model = train_classifier.self_train(model=model, 
 				   X_train=X_train_text, 
 		           X_val=X_test_text, 
 		           y_val=y_test, 
@@ -135,7 +135,7 @@ model = self_train(model=model,
 		           batch_size=args['self_train_batch_size'], 
 		           q_update_interval=args['q_update_interval'],
 		           self_train_thresh=eval(args['self_train_thresh']), 
-		           print_eval=True):
+		           print_eval=True)
 
 current_time = datetime.now()
 model_name = f'end_model_self_trained_{current_time.strftime("%d %b %Y %H:%M:%S")}.pth'

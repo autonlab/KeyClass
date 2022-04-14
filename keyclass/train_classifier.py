@@ -143,7 +143,7 @@ def self_train(model: torch.nn.Module,
     
     pbar = trange(N // (batch_size*q_update_interval), unit="batch")
     for epoch in pbar:
-        pbar.set_description(f"Epoch {nep}")
+        pbar.set_description(f"Epoch {epoch}")
         inds = np.random.randint(0, N, batch_size*q_update_interval)
 
         with torch.no_grad():

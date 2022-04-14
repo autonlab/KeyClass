@@ -5,6 +5,10 @@ criterion: torch.nn.CrossEntropyLoss(reduction='none')
 data_path: /zfsauton/project/public/chufang/classes/
 dataset: imdb
 device: cuda
+end_model_batch_size: 128
+end_model_lr: 1e-4
+end_model_patience: 3
+end_model_weight_decay: 1e-4
 epochs: 200
 h_sizes:
 - 768
@@ -23,7 +27,13 @@ ngram_range: !!python/tuple
 - 3
 normalize_embeddings: false
 preds_path: ../results/imdb/
+q_update_interval: 50
 results_path: ../results/imdb/
+self_train_batch_size: 32
+self_train_lr: 1e-6
+self_train_patience: 3
+self_train_thresh: 1-2e-3
+self_train_weight_decay: 1e-4
 show_progress_bar: true
 target_negative: negative, hate, expensive, bad, poor, broke, waste, horrible, would
   not recommend
@@ -31,13 +41,3 @@ target_positive: good, positive, excellent, amazing, love, fine, good quality, w
   recommend
 topk: 300
 use_noise_aware_loss: true
-end_model_lr: 1e-4
-end_model_weight_decay: 1e-4
-end_model_patience: 3
-end_model_batch_size: 128
-self_train_lr: 1e-6
-self_train_weight_decay: 1e-4
-self_train_patience: 3
-self_train_batch_size: 32
-q_update_interval: 50
-self_train_thresh: 1-2e-3
