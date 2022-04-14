@@ -68,19 +68,19 @@ classifier = models.FeedForwardFlexible(encoder_model=encoder,
 										h_sizes=args['h_sizes'], 
 										activation=eval(args['activation']),
 										device=torch.device(args['device']))
-
+print('\n===== Training the downstream classifier =====\n')
 model = train_classifier.train(model=classifier, 
 							   device=torch.device(args['device']),
 							   X_train=X_train_embed_masked, 
 							   y_train=y_train_lm_masked,
 							   sample_weights=sample_weights_masked if args['use_noise_aware_loss'] else None, 
 					           epochs=args['epochs'], 
-					           batch_size=args['batch_size'], 
+					           batch_size=args['end_model_batch_size'], 
 					           criterion=eval(args['criterion']), 
 					           raw_text=False, 
-					           lr=eval(args['lr']), 
-					           weight_decay=eval(args['weight_decay']),
-					           patience=args['patience'])
+					           lr=eval(args['end_model_lr']), 
+					           weight_decay=eval(args['end_model_weight_decay']),
+					           patience=args['end_model_patience'])
 
 if not os.path.exists(args['model_path']): os.makedirs(args['model_path'])
 current_time = datetime.now()
@@ -89,8 +89,8 @@ print(f'Saving model {model_name}...')
 with open(join(args['model_path'], model_name), 'wb') as f:
     torch.save(model, f)
 
-end_model_preds_train = model.predict_proba(torch.from_numpy(X_train_embed_masked), batch_size=512, raw_text=False)
-end_model_preds_test = model.predict_proba(torch.from_numpy(X_test_embed), batch_size=512, raw_text=False)
+end_model_preds_train = model.predict_proba(X_train_embed_masked, batch_size=512, raw_text=False)
+end_model_preds_test = model.predict_proba(X_test_embed, batch_size=512, raw_text=False)
 
 # Save the predictions
 with open(join(args['preds_path'], 'end_model_preds_train.pkl'), 'wb') as f:
@@ -116,4 +116,42 @@ testing_metrics = utils.compute_metrics_bootstrap(y_preds=np.argmax(end_model_pr
 	y_true=y_test, average=args['average'], n_bootstrap=args['n_bootstrap'], n_jobs=args['n_jobs'])
 utils.log(metrics=testing_metrics, 
 	filename='end_model_with_ground_truth', 
+	results_dir=args['results_path'], split='test')
+
+print('\n===== Self-training the downstream classifier =====\n')
+
+# Fetching the raw text data for self-training
+X_train_text = utils.fetch_data(dataset=args['dataset'], path=args['data_path'], split='train')
+X_test_text = utils.fetch_data(dataset=args['dataset'], path=args['data_path'], split='test')
+
+model = self_train(model=model, 
+				   X_train=X_train_text, 
+		           X_val=X_test_text, 
+		           y_val=y_test, 
+		           device=torch.device(args['device']), 
+		           lr=eval(args['self_train_lr']), 
+		           weight_decay=eval(args['self_train_weight_decay']),
+		           patience=args['self_train_patience'], 
+		           batch_size=args['self_train_batch_size'], 
+		           q_update_interval=args['q_update_interval'],
+		           self_train_thresh=eval(args['self_train_thresh']), 
+		           print_eval=True):
+
+current_time = datetime.now()
+model_name = f'end_model_self_trained_{current_time.strftime("%d %b %Y %H:%M:%S")}.pth'
+print(f'Saving model {model_name}...')
+with open(join(args['model_path'], model_name), 'wb') as f:
+    torch.save(model, f)
+
+end_model_preds_test = model.predict_proba(X_test_text, batch_size=args['self_train_batch_size'], raw_text=True)
+
+# Save the predictions
+with open(join(args['preds_path'], 'end_model_self_trained_preds_test.pkl'), 'wb') as f:
+    pkl.dump(end_model_preds_test, f)
+
+# Print statistics
+testing_metrics = utils.compute_metrics_bootstrap(y_preds=np.argmax(end_model_preds_test, axis=1), 
+	y_true=y_test, average=args['average'], n_bootstrap=args['n_bootstrap'], n_jobs=args['n_jobs'])
+utils.log(metrics=testing_metrics, 
+	filename='end_model_with_ground_truth_self_trained', 
 	results_dir=args['results_path'], split='test')

@@ -5,7 +5,7 @@ import numpy as np
 from tqdm import tqdm, trange
 import copy
 
-def get_q_soft(p: torch.tensor):
+def get_q_soft(p: np.ndarray):
     """Get target distribution for model refinement via self-training. 
 
     Soft labeling (Xie et al., 2016) derives Q by enhancing high-confidence predictions while
@@ -19,8 +19,8 @@ def get_q_soft(p: torch.tensor):
     ----------
     Junyuan Xie, Ross B. Girshick, and Ali Farhadi. 2016. Unsupervised deep embedding for clustering analysis. In ICML.
     """
-    q = torch.square(p) / torch.sum(p, dim=0, keepdim=True)
-    q = q / torch.sum(q, dim=1, keepdim=True)
+    q = np.square(p) / np.sum(p, dim=0, keepdim=True)
+    q = q / np.sum(q, dim=1, keepdim=True)
     return q
 
 
@@ -110,55 +110,62 @@ def train(model: torch.nn.Module,
 
     return model
 
+def self_train(model: torch.nn.Module, 
+               X_train: Union[str, List[str]], 
+               X_val: Union[str, List[str]], 
+               y_val: Union[np.ndarray], 
+               device: torch.device = torch.device("cuda"), 
+               lr: float = 1e-5, 
+               weight_decay: float = 1e-4, 
+               batch_size: int = 32, 
+               q_update_interval: int = 50,
+               patience: int = 3, 
+               self_train_thresh: float = 1-2e-3, 
+               print_eval: bool = True):
+    """Function to self train a model.
 
-def self_train(model, X_train, X_val, y_val, device, lr=1e-5, weight_decay=1e-4, batch_size=32, q_update_interval=50,
-    patience=3, self_train_thresh=1-2e-3, print_eval=True):
+    Parameters
+    ----------
 
+    """
     model.train()
     model.zero_grad()
-
     model.to(device)
-    criterion = torch.nn.KLDivLoss(reduction='batchmean')
     
+    criterion = torch.nn.KLDivLoss(reduction='batchmean')
     optimizer = torch.optim.Adam(model.parameters(), lr=lr, weight_decay=weight_decay)
-
-    print('X_train', len(X_train))
-    if type(X_train) != np.ndarray:
-        X_train = np.array(X_train)
     
     tolcount = 0
     
-    # update p every batch, update q every epoch
+    # Update P every batch and Q every epoch
     N = len(X_train)
     permutation = torch.randperm(N)
-        
-    for epoch in range(N // (batch_size*q_update_interval)):
+    
+    pbar = trange(N // (batch_size*q_update_interval), unit="batch")
+    for epoch in pbar:
+        pbar.set_description(f"Epoch {nep}")
         inds = np.random.randint(0, N, batch_size*q_update_interval)
+
         with torch.no_grad():
-            all_preds = model.predict_proba(X_train[inds], batch_size=batch_size)
-            
-            model.train()
-            target_dist  = get_q_soft(torch.from_numpy(all_preds)) # should be of size (N, num_categories)
+            pred_proba = model.predict_proba(X_train[inds], 
+                batch_size=batch_size, raw_text=True).detach().cpu().numpy() 
+            target_dist  = get_q_soft(pred_proba) # should be of size (N, num_categories)
             target_preds = torch.argmax(target_dist, dim=1).detach().cpu().numpy()
             
-            if np.mean(np.argmax(all_preds, axis=1) == target_preds) > self_train_thresh:
-                tolcount += 1
-            else:
-                tolcount = 0
-
-            print("Self Train Agreement:", np.mean(np.argmax(all_preds, axis=1) == target_preds), 
-                    'tolcount', tolcount)
-
+            self_train_agreement = np.mean(np.argmax(pred_proba, axis=1) == target_preds)
+            
+            if self_train_agreement > self_train_thresh: tolcount += 1
+            else: tolcount = 0
+            
             if tolcount >= patience:
                 break
 
         for i in range(0, batch_size*q_update_interval, batch_size):
-            batch_x = X_train[inds][i:i+batch_size]
+            batch_x = X_train[inds][i:i+batch_size] # The training data is moved to device by the encoder model in its forward function
             batch_q = target_dist[i:i+batch_size].to(device)
             
-            out = model.forward(batch_x, mode='self_train')
+            out = model.forward(batch_x, mode='self_train', raw_text=True)
             loss = criterion(out, batch_q)
-            
             optimizer.zero_grad()
             loss.backward()
             torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
@@ -167,7 +174,9 @@ def self_train(model, X_train, X_val, y_val, device, lr=1e-5, weight_decay=1e-4,
             del batch_x, batch_q
         
         if print_eval==True:
-            val_preds = model.predict(X_val)
-            print('Validation accuracy', np.mean(val_preds==y_val), 'tolcount', tolcount)
+            val_preds = model.predict(X_val).detach().numpy().cpu()
 
+        pbar.set_postfix(tolerance_count=tolcount, 
+                self_train_agreement=self_train_agreement, 
+                validation_accuracy=np.mean(val_preds==y_val) if print_eval else None)
     return model
