@@ -1,10 +1,9 @@
 dataset: dbpedia
-end_model_lr: 1e-4
 h_sizes:
 - 768
 - 256
 - 64
-- 4
+- 14
 max_num: 250000
 model_path: ../models/dbpedia/
 preds_path: ../results/dbpedia/
@@ -23,3 +22,4 @@ target_10: plant, tree
 target_11: album
 target_12: film
 target_13: novel, publication, book
+topk: 50
