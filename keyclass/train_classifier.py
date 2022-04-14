@@ -164,7 +164,7 @@ def self_train(model: torch.nn.Module,
 
         for i in range(0, batch_size*q_update_interval, batch_size):
             batch_x = X_train[inds][i:i+batch_size] # The training data is moved to device by the encoder model in its forward function
-            batch_q = target_dist[i:i+batch_size].to(device)
+            batch_q = torch.from_numpy(target_dist[i:i+batch_size]).to(device)
             
             out = model.forward(batch_x, mode='self_train', raw_text=True)
             loss = criterion(out, batch_q)
@@ -176,7 +176,7 @@ def self_train(model: torch.nn.Module,
             del batch_x, batch_q
         
         if print_eval==True:
-            val_preds = model.predict(X_val).detach().numpy().cpu()
+            val_preds = model.predict(X_val)
 
         pbar.set_postfix(tolerance_count=tolcount, 
                 self_train_agreement=self_train_agreement, 
