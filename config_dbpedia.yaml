@@ -1,0 +1,25 @@
+dataset: dbpedia
+end_model_lr: 1e-4
+h_sizes:
+- 768
+- 256
+- 64
+- 4
+max_num: 250000
+model_path: ../models/dbpedia/
+preds_path: ../results/dbpedia/
+results_path: ../results/dbpedia/
+target_company: company
+target_school_university: school, university
+target_artist: artist
+target_athlete: athlete
+target_politics: politics 
+target_transportation: transportation
+target_building: building, tower
+target_river_mountain_lake: river, mountain, lake
+target_village: village
+target_animal: animal
+target_plant_tree: plant, tree
+target_album: album
+target_film: film
+target_novel_publication_book: novel, publication, book

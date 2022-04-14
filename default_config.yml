@@ -25,19 +25,19 @@ n_jobs: 10
 ngram_range: !!python/tuple
 - 1
 - 3
-normalize_embeddings: false
+normalize_embeddings: False
 preds_path: ../results/imdb/
 q_update_interval: 50
 results_path: ../results/imdb/
-self_train_batch_size: 2
+self_train_batch_size: 32
 self_train_lr: 1e-6
 self_train_patience: 3
 self_train_thresh: 1-2e-3
 self_train_weight_decay: 1e-4
-show_progress_bar: true
+show_progress_bar: True
 target_negative: negative, hate, expensive, bad, poor, broke, waste, horrible, would
   not recommend
 target_positive: good, positive, excellent, amazing, love, fine, good quality, would
   recommend
 topk: 300
-use_noise_aware_loss: true
+use_noise_aware_loss: True
