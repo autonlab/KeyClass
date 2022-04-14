@@ -9,7 +9,11 @@ import torch
 import pickle
 from config import Parser
 
-parser = Parser(config_file_path='../default_config.yml')
+parser_cmd = argparse.ArgumentParser()
+parser_cmd.add_argument('--config', default='../default_config.yml', help='Configuration file')
+args_cmd = parser_cmd.parse_args()
+
+parser = Parser(config_file_path=args_cmd.config)
 args = parser.parse()
 
 model = Encoder(model_name=args['base_encoder'], device='cuda' if torch.cuda.is_available() else 'cpu')

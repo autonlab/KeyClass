@@ -1,6 +1,7 @@
 import sys
 sys.path.append('../keyclass/')
 
+import argparse
 import numpy as np
 import torch
 import os
@@ -17,7 +18,11 @@ random_seed = 0
 torch.manual_seed(random_seed)
 np.random.seed(random_seed)
 
-parser = Parser(config_file_path='../default_config.yml')
+parser_cmd = argparse.ArgumentParser()
+parser_cmd.add_argument('--config', default='../default_config.yml', help='Configuration file')
+args_cmd = parser_cmd.parse_args()
+
+parser = Parser(config_file_path=args_cmd.config)
 args = parser.parse()
 
 with open(join(args['preds_path'], 'proba_preds.pkl'), 'rb') as f:
