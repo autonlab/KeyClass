@@ -12,6 +12,11 @@ from config import Parser
 import pickle as pkl
 from datetime import datetime
 
+# Set random seeds
+random_seed = 0
+torch.manual_seed(random_seed)
+np.random.seed(random_seed)
+
 parser = Parser(config_file_path='../default_config.yml')
 args = parser.parse()
 
