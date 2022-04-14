@@ -127,8 +127,6 @@ class FeedForwardFlexible(torch.nn.Module):
     def forward(self, x, mode='inference', raw_text=True):
         if raw_text:
             x = self.encoder_model.forward(x)
-        else:
-            x.to(self.device)
         
         for layer in self.layers:
             x = layer(x)
@@ -151,7 +149,8 @@ class FeedForwardFlexible(torch.nn.Module):
             probs_list = []
             N = len(x_test)
             for i in trange(0, N, batch_size, unit='batches'):
-                test_batch = x_test[i:i+batch_size] 
+                if raw_text == False: test_batch = x_test[i:i+batch_size].to(self.device)
+                else: test_batch = x_test[i:i+batch_size]
                 probs = self.forward(test_batch, mode='inference', raw_text=raw_text).cpu().numpy()
                 probs_list.append(probs)
             self.train()

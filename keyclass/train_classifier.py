@@ -19,8 +19,8 @@ def get_q_soft(p: np.ndarray):
     ----------
     Junyuan Xie, Ross B. Girshick, and Ali Farhadi. 2016. Unsupervised deep embedding for clustering analysis. In ICML.
     """
-    q = np.square(p) / np.sum(p, dim=0, keepdim=True)
-    q = q / np.sum(q, dim=1, keepdim=True)
+    q = np.square(p) / np.sum(p, axis=0, keepdims=True)
+    q = q / np.sum(q, axis=1, keepdims=True)
     return q
 
 
@@ -150,9 +150,9 @@ def self_train(model: torch.nn.Module,
         
         with torch.no_grad():
             pred_proba = model.predict_proba(X_train[inds], 
-                batch_size=batch_size, raw_text=True).detach().cpu().numpy() 
+                batch_size=batch_size, raw_text=True) 
             target_dist  = get_q_soft(pred_proba) # should be of size (N, num_categories)
-            target_preds = torch.argmax(target_dist, dim=1).detach().cpu().numpy()
+            target_preds = np.argmax(target_dist, axis=1)
             
             self_train_agreement = np.mean(np.argmax(pred_proba, axis=1) == target_preds)
             
