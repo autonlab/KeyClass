@@ -7,7 +7,7 @@ from scipy.spatial import distance
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 from sklearn.semi_supervised import LabelPropagation
 import torch
-from utils import Encoder
+from models import Encoder
 import train_label_model
 
 

@@ -2,6 +2,7 @@ import sys
 sys.path.append('../keyclass/')
 
 import utils
+import models
 import create_lfs
 import numpy as np
 import pickle
