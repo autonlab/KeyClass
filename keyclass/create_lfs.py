@@ -97,7 +97,7 @@ class CreateLabellingFunctions:
         ## main driver function
 
         ## get the bert embeddings of the categories
-        self.label_embeddings = self.encoder.get_embeddings(text=label_names)
+        self.label_embeddings = self.encoder.encode(sentences=label_names)
 
         ## get vocab according to n-grams
         self.word_indicator_matrix, self.vocabulary = get_vocabulary(\
@@ -107,7 +107,7 @@ class CreateLabellingFunctions:
             ngram_range=ngram_range)
         
         # embed vocab to compare with label_embeddings
-        self.vocabulary_embeddings = self.encoder.get_embeddings(text=self.vocabulary)
+        self.vocabulary_embeddings = self.encoder.encode(sentences=self.vocabulary)
 
         # labeler.assign_categories_to_keywords(cutoff=0.9)
         self.keywords, self.assigned_category, self.word_indicator_matrix = assign_categories_to_keywords(\
