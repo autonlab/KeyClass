@@ -61,7 +61,9 @@ def train(model: torch.nn.Module,
     best_state_dict = None
 
     N = len(X_train)
-    for nep in tqdm(range(epochs)):
+    pbar = trange(epochs, unit="batch")
+    for nep in pbars:
+        pbar.set_description(f"Epoch {nep}")   
         permutation = torch.randperm(N)
         running_loss = 0
         
@@ -92,7 +94,7 @@ def train(model: torch.nn.Module,
         scheduler.step()
             
         with torch.no_grad(): # Early stopping
-            print('Tolerance count:', tolcount, 'Running loss:', running_loss, 'Best loss:', best_loss)
+            tepoch.set_postfix(tolerance_count=tolcount, running_loss=running_loss, best_loss=best_loss)
             if running_loss <= best_loss:
                 best_loss = running_loss
                 tolcount = 0
