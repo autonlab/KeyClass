@@ -138,19 +138,18 @@ class FeedForwardFlexible(torch.nn.Module):
         
         return x
 
-    def predict(self, x_test, batch_size=128):
-        preds = self.predict_proba(x_test, batch_size=batch_size)
+    def predict(self, x_test, batch_size=128, raw_text=True):
+        preds = self.predict_proba(x_test, batch_size=batch_size, raw_text=raw_text)
         preds = np.argmax(preds, axis=1)
         return preds
         
-    def predict_proba(self, x_test, batch_size=128):
+    def predict_proba(self, x_test, batch_size=128, raw_text=True):
         with torch.no_grad():
             self.eval()
             probs_list = []
             N = len(x_test)
-            
             for i in tqdm(range(0, N, batch_size)):
-                probs = self.forward(x_test[i:i+batch_size], mode='inference').cpu().numpy()
+                probs = self.forward(x_test[i:i+batch_size], mode='inference', raw_text=raw_text).cpu().numpy()
                 probs_list.append(probs)
             self.train()
         return np.concatenate(probs_list, axis=0)

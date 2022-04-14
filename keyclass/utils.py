@@ -1,33 +1,148 @@
 from os.path import join
 import re
-import torch
-from transformers import AutoTokenizer, AutoModel
-from sentence_transformers import SentenceTransformer
+from typing import List, Dict, Tuple, Iterable, Type, Union, Callable, Optional
 import numpy as np
-from tqdm import tqdm
+import joblib
+from sklearn.metrics import precision_score, recall_score
+from time import time
 
-def mean_pooling(model_output, attention_mask):
-    token_embeddings = model_output[0] #First element of model_output contains all token embeddings
-    input_mask_expanded = attention_mask.unsqueeze(-1).expand(token_embeddings.size()).float()
-    return torch.sum(token_embeddings * input_mask_expanded, 1) / torch.clamp(input_mask_expanded.sum(1), min=1e-9)
+def log(metrics: Union[List, Dict], 
+        filename: str,
+        results_dir: str, 
+        split: str):
+    """Logging function
+        
+        Parameters
+        ----------
+        metrics: Union[List, Dict]
+            The metrics to log and save in a file
+        filename: str
+            Name of the file
+        results_dir: str
+            Path to results directory
+        split: str
+            Train/test split
+    """
+    if isinstance(metrics, list):
+        assert len(metrics)==3, "Metrics must be of length 3!"
+        results = dict()
+        results['Accuracy'] = metrics[0]
+        results['Precision'] = metrics[1]
+        results['Recall'] = metrics[2]
+    else: 
+        results = metrics
+    
+    filename_complete = join(results_dir, f'{split}_filename_{strftime("%d %b %Y %H:%M:%S", time.time())}.txt')
+    print(f'Saving results in {filename_complete}...')
+    
+    with open(filename_complete, 'wb') as f: 
+         f.write(json.dumps(results))
 
-def encode(model, tokenizer, text):
-    with torch.no_grad():
-        encoded_input = tokenizer(text, return_tensors='pt', truncation=True, max_length=512, padding=True).to('cuda')
-        # encoded_input = tokenizer(text.tolist(), return_tensors='pt').to('cuda')
-        # print(encoded_input); return None
-        model_output  = model(**encoded_input)
-        sentence_embeddings = mean_pooling(model_output, encoded_input['attention_mask']).cpu().numpy()
-        del encoded_input
-        # print(sentence_embeddings.shape)
-        return sentence_embeddings
 
-def cleantext(text):
-    text = text.lower()
-    text = re.sub(r'<.*?>|[\.`\',;\?\*\[\]\(\)-:_]*|[0-9]*', '', text)
-    text = re.sub(r'[\r\n]+', ' ', text)
-    text = re.sub(r'[^\x00-\x7F]+', ' ', text)
-    return text
+def compute_metrics(y_preds: np.array, 
+                    y_true: np.array,
+                    average: str = 'weighted'):
+    """Compute accuracy, recall and precision
+
+        Parameters
+        ----------
+        y_preds: np.array
+            Predictions
+        
+        y_true: np.array
+            Ground truth labels
+        
+        average: str
+            This parameter is required for multiclass/multilabel targets. If None, 
+            the scores for each class are returned. Otherwise, this determines the 
+            type of averaging performed on the data.
+    """
+    return [np.mean(y_preds==y_true), 
+            precision_score(y_true, y_preds, average=average),
+            recall_score(y_true, y_preds, average=average)]
+
+def compute_metrics_bootstrap(y_preds: np.array, 
+                              y_true: np.array, 
+                              average: str = 'weighted', 
+                              n_bootstrap: int = 100, 
+                              n_jobs: int = 10):
+    """Compute bootstrapped confidence intervals (CIs) around metrics of interest. 
+
+        Parameters
+        ----------
+        y_preds: np.array
+            Predictions
+        
+        y_true: np.array
+            Ground truth labels
+        
+        average: str
+            This parameter is required for multiclass/multilabel targets. If None, 
+            the scores for each class are returned. Otherwise, this determines the 
+            type of averaging performed on the data.
+
+        n_bootstrap: int
+            Number of boostrap samples to compute CI. 
+
+        n_jobs: int
+            Number of jobs to run in parallel. 
+    """                       
+    output_ =  joblib.Parallel(n_jobs=n_jobs, verbose=1)(
+                                joblib.delayed(compute_metrics)
+                                    (y_preds[boostrap_inds], y_true[boostrap_inds]) \
+                                    for boostrap_inds in [\
+                                    np.random.choice(a=len(y_true), size=len(y_true)) for k in range(n_bootstrap)])
+    output_ = np.array(output_)
+    means = np.mean(output_, axis=0)
+    stds = np.std(output_, axis=0)
+    return np.stack([means, stds], axis=1)
+
+def get_balanced_data_mask(proba_preds: np.array, 
+                           max_num: int = 7000, 
+                           class_balance: Optional[np.array] = None):
+    """Utility function to keep only the most confident predictions, while maintaining class balance
+
+        Parameters
+        ---------- 
+        proba_preds: Probabilistic labels of data points
+        max_num: Maximum number of data points per class
+        class_balance: Prevalence of each class
+
+    """
+    if class_balance is None: # Assume all classes are equally likely
+        class_balance = np.ones(proba_preds.shape[1]) / proba_preds.shape[1]
+        
+    assert np.sum(class_balance) - 1 < 1e-3, "Class balance must be a probability, and hence sum to 1"
+    assert len(class_balance) == proba_preds.shape[1], f"Only {proba_preds.shape[1]} classes in the data"
+    
+    # Get integer of max number of elements per class
+    class_max_inds = [int(max_num*c) for c in class_balance]
+    train_idxs = np.array([], dtype=int)
+    
+    for i in range(proba_preds.shape[1]):
+        sorted_idxs = np.argsort(proba_preds[:,i])[::-1] # gets highest probas for class
+        sorted_idxs = sorted_idxs[:class_max_inds[i]]
+        print(f'Confidence of least confident data point of class {i}: {proba_preds[sorted_idxs[-1], i]}')
+        train_idxs = np.union1d(train_idxs, sorted_idxs)
+        
+    mask = np.zeros(len(proba_preds), dtype=bool)
+    mask[train_idxs] = True
+    return mask
+
+def clean_text(sentences: Union[str, List[str]]):
+    """Utility function to clean sentences
+    """
+    if isinstance(sentences, str):
+        sentences = [sentences]
+
+    for i, text in enumerate(sentences):
+        text = text.lower()
+        text = re.sub(r'<.*?>|[\.`\',;\?\*\[\]\(\)-:_]*|[0-9]*', '', text)
+        text = re.sub(r'[\r\n]+', ' ', text)
+        text = re.sub(r'[^\x00-\x7F]+', ' ', text)
+        sentences[i] = text
+    
+    return sentences
 
 def fetch_data(dataset='imdb', path='~/', split='train'):
     """Fetches a dataset by its name
@@ -55,47 +170,3 @@ def fetch_data(dataset='imdb', path='~/', split='train'):
         text = [cleantext(line) for line in text]
 
     return text 
-
-# class Encoder:
-#     def __init__(self, base_encoder='all-mpnet-base-v2', device = "cuda"):
-#         """Encoder class returns an instance of a sentence transformer.
-            
-            
-#             https://www.sbert.net/docs/pretrained_models.html
-            
-#             Parameters
-#             ---------- 
-#             base_encoder: str
-#                 The pre-trained tranformer model to use for encoding text. 
-#             device: str
-#                 Device to use for encoding. 'cuda' by default. 
-#         """
-#         self.base_encoder = base_encoder
-#         if self.base_encoder == 'bluebert':
-#             self.tokenizer = AutoTokenizer.from_pretrained("bionlp/bluebert_pubmed_mimic_uncased_L-12_H-768_A-12")
-#             self.model = AutoModel.from_pretrained("bionlp/bluebert_pubmed_mimic_uncased_L-12_H-768_A-12")
-#             if device=='cuda':
-#                 self.model = self.model.cuda()
-#         else:
-#             self.model = SentenceTransformer(model_name_or_path=base_encoder, device=device)
-            
-    
-#     def get_embeddings(self, text, batch_size=32):
-#         """Encode text.
-        
-#         Parameters
-#         ---------- 
-#         text: list
-#             List of text to be encoded.
-#         """
-        
-#         if self.base_encoder == 'bluebert':
-#             embeddings = [] 
-#             for i in tqdm(range(0, len(text), batch_size)):
-#                 embeddings.append(encode(self.model, self.tokenizer, text[i:i+batch_size]))
-#             embeddings = np.concatenate(embeddings)
-
-#         else:
-#             embeddings = self.model.encode(text, convert_to_numpy=True, show_progress_bar=True, batch_size=batch_size)
-        
-#         return embeddings    

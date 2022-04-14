@@ -28,6 +28,7 @@ def train(model: torch.nn.Module,
           device: torch.device = torch.device("cuda"),
           X_train: Union[Union[str, List[str]], np.ndarray], 
           y_train: Union[torch.Tensor, np.ndarray], 
+          sample_weights: Optional[np.array],
           epochs: int = 200, 
           batch_size: int = 128, 
           criterion: Callable = torch.nn.CrossEntropyLoss(reduction='none'), 
@@ -46,6 +47,9 @@ def train(model: torch.nn.Module,
 
     if raw_text == False and isinstance(X_train, np.ndarray):
         X_train = torch.from_numpy(X_train)
+
+    if sample_weights is not None:
+        sample_weights = torch.from_numpy(sample_weights.reshape(-1, 1)).to(device).float()
 
     optimizer = torch.optim.Adam(model.parameters(), lr=lr, weight_decay=weight_decay)
     scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.9)
@@ -73,12 +77,17 @@ def train(model: torch.nn.Module,
 
             out = model.forward(batch_x, mode='inference', raw_text=raw_text)
             loss = criterion(out, batch_y)
-            loss = loss.mean()
-                        
+
+            if sample_weights is not None:
+                batch_weight = sample_weights[indices]
+                loss = torch.mul(loss, batch_weight).mean()
+            else:
+                loss = loss.mean()
+            
             loss.backward()
             torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
             optimizer.step()
-            running_loss += loss.cpu().detach().numpy() * batch_size / N
+            running_loss = running_loss + (loss.cpu().detach().numpy() * batch_size / N)
 
         scheduler.step()
             

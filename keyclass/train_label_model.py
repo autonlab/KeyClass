@@ -7,22 +7,17 @@ from snorkel.labeling import LFAnalysis
 
 logging.basicConfig(level=logging.INFO)
 
-
 class LabelModelWrapper:
     """Class to train any weak supervision label model. 
-
         This class is an abstraction to the label models. We can
         ideally use any label model, but currently we only support
         data programing. Future plan is to include Dawid-Skeene.
-
         Parameters
         ---------- 
         y_train: np.array
             Gold training/development set labels
-
         n_classes: int
             Number of classes/categories. Default 2. 
-
         label_matrix: pd.DataFrame or np.array
             Label matrix of votes of each LF on all data points
     """
@@ -57,7 +52,6 @@ class LabelModelWrapper:
     def train_label_model(self, n_epochs=500, class_balance=None, 
         log_freq=100, lr=0.01, seed=13, cuda=False):
         """Train the label model
-
             Parameters
             ---------- 
             n_epochs: int
@@ -66,14 +60,11 @@ class LabelModelWrapper:
             
             class_balance: list
                 Each class’s percentage of the population, by default None
-
             log_freq: int
                 Report loss every this many epochs (steps), default is 10
-
             lr: float
                 Base learning rate (will also be affected by lr_scheduler choice 
                 and settings), default is 0.01
-
             seed: int
                 A random seed to initialize the random number generator with
         """
@@ -107,7 +98,6 @@ class LabelModelWrapper:
             tie_break_policy: str
                 Policy to break ties when converting probabilistic labels to predictions. 
                 Refer snorkel package for more details. 
-
         """
         if not self.trained: 
             print("Model must be trained before predicting labels")
@@ -116,3 +106,4 @@ class LabelModelWrapper:
         y_pred = self.label_model.predict(L=self.label_matrix, 
             tie_break_policy=tie_break_policy)
         return y_pred
+

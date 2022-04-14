@@ -1,6 +1,9 @@
 base_encoder: all-mpnet-base-v2
 batch_size: 128
 data_path: /zfsauton/project/public/chufang/classes/
+preds_path: ../results/imdb/
+model_path: ../models/imdb/
+results_path: ../results/imdb/
 dataset: imdb
 label_model_lr: 0.01
 label_model_n_epochs: 100
@@ -9,12 +12,9 @@ ngram_range: !!python/tuple
 - 1
 - 3
 normalize_embeddings: false
-save_LM_preds_path: ../results/imdb/
 show_progress_bar: true
-target_negative: negative, hate, expensive, bad, poor, broke, waste, horrible, would
-  not recommend
-target_positive: good, positive, excellent, amazing, love, fine, good quality, would
-  recommend
+target_negative: negative, hate, expensive, bad, poor, broke, waste, horrible, would not recommend
+target_positive: good, positive, excellent, amazing, love, fine, good quality, would recommend
 topk: 300
 batch_size: 128
 normalize_embeddings: False
@@ -23,3 +23,12 @@ lr: 1e-3
 weight_decay: 1e-4
 patience: 3
 epochs: 200
+max_num: 7000
+h_sizes: [768, 256, 64, 2]
+device: cuda
+activation: torch.nn.LeakyReLU()
+criterion: torch.nn.CrossEntropyLoss(reduction='none')
+use_noise_aware_loss: True
+n_bootstrap: 100
+n_jobs: 10
+average: weighted
