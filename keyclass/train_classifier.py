@@ -25,10 +25,10 @@ def get_q_soft(p: torch.tensor):
 
 
 def train(model: torch.nn.Module, 
-          device: torch.device = torch.device("cuda"),
           X_train: Union[Union[str, List[str]], np.ndarray], 
           y_train: Union[torch.Tensor, np.ndarray], 
-          sample_weights: Optional[np.array],
+          device: torch.device = torch.device("cuda"),
+          sample_weights: Optional[np.array] = None,
           epochs: int = 200, 
           batch_size: int = 128, 
           criterion: Callable = torch.nn.CrossEntropyLoss(reduction='none'), 
@@ -104,7 +104,8 @@ def train(model: torch.nn.Module,
             if tolcount > patience:
                 print('Stopping early...')
                 model.load_state_dict(best_state_dict) # Return the best model
-                
+                return model
+
     return model
 
 

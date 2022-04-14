@@ -1,3 +1,10 @@
+import sys
+sys.path.append('../keyclass/')
+
+import numpy as np
+import torch
+import os
+from os.path import join
 import models
 import utils
 import train_classifier
@@ -9,7 +16,7 @@ parser = Parser(config_file_path='../default_config.yml')
 args = parser.parse()
 
 with open(join(args['preds_path'], 'proba_preds.pkl'), 'rb') as f:
-    proba_preds = pickle.load(f)
+    proba_preds = pkl.load(f)
 y_train_lm = np.argmax(proba_preds, axis=1)
 sample_weights = np.max(proba_preds, axis=1) # Sample weights for noise aware loss
 
@@ -19,9 +26,9 @@ mask = utils.get_balanced_data_mask(proba_preds, max_num=args['max_num'], class_
 # Load training and testing data 
 # We have already encode the dataset, so we'll just load the embeddings
 with open(join(args['data_path'], args['dataset'], f'train_embeddings.pkl'), 'rb') as f:
-        X_train_embed = pickle.load(f)
+        X_train_embed = pkl.load(f)
 with open(join(args['data_path'], args['dataset'], f'test_embeddings.pkl'), 'rb') as f:
-        X_test_embed = pickle.load(f)
+        X_test_embed = pkl.load(f)
 
 # Load training and testing ground truth labels
 with open(join(args['data_path'], args['dataset'], f'train_labels.txt'), 'r') as f:
@@ -71,8 +78,8 @@ model = train_classifier.train(model=classifier,
 					           batch_size=args['batch_size'], 
 					           criterion=eval(args['criterion']), 
 					           raw_text=False, 
-					           lr=args['lr'], 
-					           weight_decay=args['weight_decay'],
+					           lr=eval(args['lr']), 
+					           weight_decay=eval(args['weight_decay']),
 					           patience=args['patience'])
 
 if not os.path.exists(args['model_path']): os.makedirs(args['model_path'])
@@ -87,10 +94,10 @@ end_model_preds_test = model.predict_proba(X_test_embed, batch_size=512, raw_tex
 
 # Save the predictions
 with open(join(args['preds_path'], 'end_model_preds_train.pkl'), 'wb') as f:
-    pickle.dump(end_model_preds_train, f)
+    pkl.dump(end_model_preds_train, f)
 
 with open(join(args['preds_path'], 'end_model_preds_test.pkl'), 'wb') as f:
-    pickle.dump(end_model_preds_test, f)
+    pkl.dump(end_model_preds_test, f)
 
 # Print statistics
 training_metrics_with_gt = utils.compute_metrics(y_preds=np.argmax(end_model_preds_train, axis=1), 

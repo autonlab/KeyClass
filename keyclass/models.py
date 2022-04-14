@@ -97,7 +97,7 @@ class Encoder(torch.nn.Module):
         return all_embeddings
 
 class FeedForwardFlexible(torch.nn.Module):
-    def __init__(self, encoder_model: nn.Module,
+    def __init__(self, encoder_model: torch.nn.Module,
                  h_sizes: Iterable[int] = [768, 256, 64, 2], 
                  activation: torch.nn.Module = torch.nn.LeakyReLU(), 
                  device: str = "cpu"):
