@@ -39,7 +39,7 @@ def log(metrics: Union[List, Dict],
     else: 
         results = metrics
     
-    filename_complete = join(results_dir, f'{split}_filename_{datetime.now().strftime("%d-%b-%Y-%H_%M_%S")}.txt')
+    filename_complete = join(results_dir, f'{split}_{filename}_{datetime.now().strftime("%d-%b-%Y-%H_%M_%S")}.txt')
     print(f'Saving results in {filename_complete}...')
     
     with open(filename_complete, 'w', encoding='utf-8') as f: 

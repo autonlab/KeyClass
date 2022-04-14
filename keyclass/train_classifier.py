@@ -140,12 +140,14 @@ def self_train(model: torch.nn.Module,
     # Update P every batch and Q every epoch
     N = len(X_train)
     permutation = torch.randperm(N)
-    
+   
+    X_train = np.array(X_train) # Ensures that we are able to index into X_train
+
     pbar = trange(N // (batch_size*q_update_interval), unit="batch")
     for epoch in pbar:
         pbar.set_description(f"Epoch {epoch}")
         inds = np.random.randint(0, N, batch_size*q_update_interval)
-
+        
         with torch.no_grad():
             pred_proba = model.predict_proba(X_train[inds], 
                 batch_size=batch_size, raw_text=True).detach().cpu().numpy() 

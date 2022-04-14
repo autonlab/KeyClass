@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 class Encoder(torch.nn.Module):
     def __init__(self, model_name: str ='all-mpnet-base-v2', 
-                 device: str = "cpu"):
+                 device: str = "cuda"):
         """Encoder class returns an instance of a sentence transformer.
             https://www.sbert.net/docs/pretrained_models.html
             
@@ -100,7 +100,7 @@ class FeedForwardFlexible(torch.nn.Module):
     def __init__(self, encoder_model: torch.nn.Module,
                  h_sizes: Iterable[int] = [768, 256, 64, 2], 
                  activation: torch.nn.Module = torch.nn.LeakyReLU(), 
-                 device: str = "cpu"):
+                 device: str = "cuda"):
         super(FeedForwardFlexible, self).__init__()
         """
         Flexible feed forward network over a base encoder. 
@@ -149,7 +149,7 @@ class FeedForwardFlexible(torch.nn.Module):
             probs_list = []
             N = len(x_test)
             for i in trange(0, N, batch_size, unit='batches'):
-                test_batch = x_test[i:i+batch_size].to(self.device)
+                test_batch = x_test[i:i+batch_size] #.to(self.device)
                 probs = self.forward(test_batch, mode='inference', raw_text=raw_text).cpu().numpy()
                 probs_list.append(probs)
             self.train()
