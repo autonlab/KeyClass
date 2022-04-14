@@ -16,7 +16,7 @@ class Parser:
 		print(self.config)
 
 		for key, value in self.default_config.items():
-			elif ('target' not in key) and ((key not in list(self.config.keys())) or (self.config[key] is None)):
+			if ('target' not in key) and ((key not in list(self.config.keys())) or (self.config[key] is None)):
 				self.config[key] = self.default_config[key]
 				print(f'Setting the value of {key} to {self.default_config[key]}!')
 		
