@@ -40,7 +40,7 @@ for a in args:
 
 # Creating labeling functions
 labeler = create_lfs.CreateLabellingFunctions(base_encoder=args['base_encoder'], 
-                                              device=device=torch.device(args['device']))
+                                              device=torch.device(args['device']))
 proba_preds = labeler.get_labels(text_corpus=train_text, label_names=label_names, min_df=args['min_df'], 
                                  ngram_range=args['ngram_range'], topk=args['topk'], y_train=y_train, 
                                  label_model_lr=args['label_model_lr'], label_model_n_epochs=args['label_model_n_epochs'], 
