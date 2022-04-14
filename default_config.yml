@@ -1,6 +1,6 @@
 activation: torch.nn.LeakyReLU()
 average: weighted
-base_encoder: all-mpnet-base-v2
+base_encoder: paraphrase-mpnet-base-v2
 criterion: torch.nn.CrossEntropyLoss(reduction='none')
 data_path: /zfsauton/project/public/chufang/classes/
 dataset: imdb
