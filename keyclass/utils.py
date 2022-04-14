@@ -1,10 +1,11 @@
+import json
 from os.path import join
 import re
 from typing import List, Dict, Tuple, Iterable, Type, Union, Callable, Optional
 import numpy as np
 import joblib
 from sklearn.metrics import precision_score, recall_score
-from time import time
+from datetime import datetime
 
 def log(metrics: Union[List, Dict], 
         filename: str,
@@ -29,13 +30,19 @@ def log(metrics: Union[List, Dict],
         results['Accuracy'] = metrics[0]
         results['Precision'] = metrics[1]
         results['Recall'] = metrics[2]
+    elif isinstance(metrics, np.ndarray):
+        assert len(metrics)==3, "Metrics must be of length 3!"
+        results = dict()
+        results['Accuracy (mean, std)'] = metrics[0].tolist()
+        results['Precision (mean, std)'] = metrics[1].tolist()
+        results['Recall (mean, std)'] = metrics[2].tolist()
     else: 
         results = metrics
     
-    filename_complete = join(results_dir, f'{split}_filename_{strftime("%d %b %Y %H:%M:%S", time.time())}.txt')
+    filename_complete = join(results_dir, f'{split}_filename_{datetime.now().strftime("%d-%b-%Y-%H_%M_%S")}.txt')
     print(f'Saving results in {filename_complete}...')
     
-    with open(filename_complete, 'wb') as f: 
+    with open(filename_complete, 'w', encoding='utf-8') as f: 
          f.write(json.dumps(results))
 
 

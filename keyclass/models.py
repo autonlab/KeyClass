@@ -3,7 +3,7 @@ from sentence_transformers import SentenceTransformer
 import sentence_transformers.util
 from typing import List, Dict, Tuple, Iterable, Type, Union, Callable, Optional
 import numpy as np
-from tqdm import tqdm
+from tqdm import tqdm, trange
 from tqdm.autonotebook import trange
 import torch
 import logging 
@@ -148,8 +148,9 @@ class FeedForwardFlexible(torch.nn.Module):
             self.eval()
             probs_list = []
             N = len(x_test)
-            for i in tqdm(range(0, N, batch_size)):
-                probs = self.forward(x_test[i:i+batch_size], mode='inference', raw_text=raw_text).cpu().numpy()
+            for i in trange(0, N, batch_size, unit='batches'):
+                test_batch = x_test[i:i+batch_size].to(self.device)
+                probs = self.forward(test_batch, mode='inference', raw_text=raw_text).cpu().numpy()
                 probs_list.append(probs)
             self.train()
         return np.concatenate(probs_list, axis=0)

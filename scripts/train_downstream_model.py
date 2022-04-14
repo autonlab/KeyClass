@@ -10,7 +10,7 @@ import utils
 import train_classifier
 from config import Parser
 import pickle as pkl
-import time
+from datetime import datetime
 
 parser = Parser(config_file_path='../default_config.yml')
 args = parser.parse()
@@ -83,14 +83,14 @@ model = train_classifier.train(model=classifier,
 					           patience=args['patience'])
 
 if not os.path.exists(args['model_path']): os.makedirs(args['model_path'])
-current_time = time.time()
-model_name = f'end_model_{strftime("%d %b %Y %H:%M:%S", current_time)}.pth'
+current_time = datetime.now()
+model_name = f'end_model_{current_time.strftime("%d-%b-%Y-%H_%M_%S")}.pth'
 print(f'Saving model {model_name}...')
 with open(join(args['model_path'], model_name), 'wb') as f:
     torch.save(model, f)
 
-end_model_preds_train = model.predict_proba(X_train_embed_masked, batch_size=512, raw_text=False)
-end_model_preds_test = model.predict_proba(X_test_embed, batch_size=512, raw_text=False)
+end_model_preds_train = model.predict_proba(torch.from_numpy(X_train_embed_masked), batch_size=512, raw_text=False)
+end_model_preds_test = model.predict_proba(torch.from_numpy(X_test_embed), batch_size=512, raw_text=False)
 
 # Save the predictions
 with open(join(args['preds_path'], 'end_model_preds_train.pkl'), 'wb') as f:

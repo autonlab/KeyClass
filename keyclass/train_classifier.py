@@ -2,7 +2,7 @@ from curses import raw
 import torch
 from typing import List, Dict, Tuple, Iterable, Type, Union, Callable, Optional
 import numpy as np
-from tqdm import tqdm
+from tqdm import tqdm, trange
 import copy
 
 def get_q_soft(p: torch.tensor):
@@ -62,7 +62,7 @@ def train(model: torch.nn.Module,
 
     N = len(X_train)
     pbar = trange(epochs, unit="batch")
-    for nep in pbars:
+    for nep in pbar:
         pbar.set_description(f"Epoch {nep}")   
         permutation = torch.randperm(N)
         running_loss = 0
@@ -94,7 +94,7 @@ def train(model: torch.nn.Module,
         scheduler.step()
             
         with torch.no_grad(): # Early stopping
-            tepoch.set_postfix(tolerance_count=tolcount, running_loss=running_loss, best_loss=best_loss)
+            pbar.set_postfix(tolerance_count=tolcount, running_loss=running_loss, best_loss=best_loss)
             if running_loss <= best_loss:
                 best_loss = running_loss
                 tolcount = 0
