@@ -9,17 +9,17 @@ max_num: 250000
 model_path: ../models/dbpedia/
 preds_path: ../results/dbpedia/
 results_path: ../results/dbpedia/
-target_company: company
-target_school_university: school, university
-target_artist: artist
-target_athlete: athlete
-target_politics: politics 
-target_transportation: transportation
-target_building: building, tower
-target_river_mountain_lake: river, mountain, lake
-target_village: village
-target_animal: animal
-target_plant_tree: plant, tree
-target_album: album
-target_film: film
-target_novel_publication_book: novel, publication, book
+target_0: company
+target_1: school, university
+target_2: artist
+target_3: athlete
+target_4: politics 
+target_5: transportation
+target_6: building, tower
+target_7: river, mountain, lake
+target_8: village
+target_9: animal
+target_10: plant, tree
+target_11: album
+target_12: film
+target_13: novel, publication, book

@@ -35,9 +35,9 @@ self_train_patience: 3
 self_train_thresh: 1-2e-3
 self_train_weight_decay: 1e-4
 show_progress_bar: True
-target_negative: negative, hate, expensive, bad, poor, broke, waste, horrible, would
+target_0: negative, hate, expensive, bad, poor, broke, waste, horrible, would
   not recommend
-target_positive: good, positive, excellent, amazing, love, fine, good quality, would
+target_1: good, positive, excellent, amazing, love, fine, good quality, would
   recommend
 topk: 300
 use_noise_aware_loss: True
