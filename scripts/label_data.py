@@ -11,7 +11,11 @@ import os
 from os.path import join
 from config import Parser
 
-parser = Parser(config_file_path='../default_config.yml')
+parser_cmd = argparse.ArgumentParser()
+parser_cmd.add_argument('--config', default='../default_config.yml', help='Configuration file')
+args_cmd = parser_cmd.parse_args()
+
+parser = Parser(config_file_path=args_cmd.config)
 args = parser.parse()
 
 # Load training data
@@ -35,7 +39,8 @@ for a in args:
     if 'target' in a: label_names.append(args[a])
 
 # Creating labeling functions
-labeler = create_lfs.CreateLabellingFunctions(base_encoder=args['base_encoder'])
+labeler = create_lfs.CreateLabellingFunctions(base_encoder=args['base_encoder'], 
+                                              device=device=torch.device(args['device']))
 proba_preds = labeler.get_labels(text_corpus=train_text, label_names=label_names, min_df=args['min_df'], 
                                  ngram_range=args['ngram_range'], topk=args['topk'], y_train=y_train, 
                                  label_model_lr=args['label_model_lr'], label_model_n_epochs=args['label_model_n_epochs'], 

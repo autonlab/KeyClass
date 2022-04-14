@@ -77,11 +77,12 @@ class CreateLabellingFunctions:
     """Class to create and store labelling functions.             
     """
 
-    def __init__(self, base_encoder='all-mpnet-base-v2'):
+    def __init__(self, 
+                 base_encoder='all-mpnet-base-v2', 
+                 device: torch.device = torch.device("cuda")):
         
-        self.encoder = Encoder(
-            base_encoder=base_encoder, 
-            device='cuda' if torch.cuda.is_available() else 'cpu')
+        self.device = device
+        self.encoder = Encoder(base_encoder=base_encoder, device=device)
         
         self.label_matrix = None
         self.keywords = None
