@@ -9,7 +9,7 @@ end_model_batch_size: 128
 end_model_lr: 1e-4
 end_model_patience: 3
 end_model_weight_decay: 1e-4
-epochs: 200
+end_model_epochs: 50
 h_sizes:
 - 768
 - 256
