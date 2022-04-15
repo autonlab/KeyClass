@@ -41,7 +41,8 @@ for a in args:
 
 # Creating labeling functions
 labeler = create_lfs.CreateLabellingFunctions(base_encoder=args['base_encoder'], 
-                                              device=torch.device(args['device']))
+                                              device=torch.device(args['device']),
+                                              label_model=args['label_model'])
 proba_preds = labeler.get_labels(text_corpus=train_text, label_names=label_names, min_df=args['min_df'], 
                                  ngram_range=args['ngram_range'], topk=args['topk'], y_train=y_train, 
                                  label_model_lr=args['label_model_lr'], label_model_n_epochs=args['label_model_n_epochs'], 
@@ -52,5 +53,5 @@ y_train_pred = np.argmax(proba_preds, axis=1)
 print('Label Model Training Accuracy', np.mean(y_train_pred==y_train))
 print('Label Model Predictions: Unique value and counts', np.unique(y_train_pred, return_counts=True))
 if not os.path.exists(args['preds_path']): os.makedirs(args['preds_path'])
-with open(join(args['preds_path'], 'proba_preds.pkl'), 'wb') as f:
+with open(join(args['preds_path'], f'{args['label_model']}_proba_preds.pkl'), 'wb') as f:
     pickle.dump(proba_preds, f)

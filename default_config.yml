@@ -5,6 +5,7 @@ criterion: torch.nn.CrossEntropyLoss(reduction='none')
 data_path: /zfsauton/project/public/chufang/classes/
 dataset: imdb
 device: cuda
+label_model: data_programming
 end_model_batch_size: 128
 end_model_epochs: 20
 end_model_lr: 1e-4

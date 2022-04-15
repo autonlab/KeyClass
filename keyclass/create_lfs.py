@@ -78,8 +78,9 @@ class CreateLabellingFunctions:
     """
 
     def __init__(self, 
-                 base_encoder='all-mpnet-base-v2', 
-                 device: torch.device = torch.device("cuda")):
+                 base_encoder='paraphrase-mpnet-base-v2', 
+                 device: torch.device = torch.device("cuda"),
+                 label_model: str = 'data_programming'):
         
         self.device = device
         self.encoder = Encoder(model_name=base_encoder, device=device)
@@ -90,6 +91,7 @@ class CreateLabellingFunctions:
         self.vocabulary = None
         self.vocabulary_embeddings = None
         self.assigned_category = None
+        self.label_model_name = label_model
     
     
     def get_labels(self, text_corpus, label_names, min_df, ngram_range, topk, 
@@ -133,11 +135,12 @@ class CreateLabellingFunctions:
             assigned_category=self.assigned_category)
 
     #     print('labeler.label_matrix', np.unique(labeler.label_matrix, return_counts=True))
-        label_model = train_label_model.LabelModelWrapper(\
+        label_model = models.LabelModelWrapper(\
             label_matrix=self.label_matrix, 
             n_classes=len(np.unique(y_train)), 
             y_train=y_train, 
-            device='cuda' if torch.cuda.is_available() else 'cpu')
+            device=self.device,
+            model_name=self.label_model_name)
             
         label_model.train_label_model(\
             lr=label_model_lr, 
