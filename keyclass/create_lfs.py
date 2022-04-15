@@ -7,9 +7,7 @@ from scipy.spatial import distance
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 from sklearn.semi_supervised import LabelPropagation
 import torch
-from models import Encoder
-import train_label_model
-
+import models
 
 def get_vocabulary(text_corpus, max_df=1.0, min_df=0.01, ngram_range=(1, 1)):
     """Returns vocabulary and word indicator matrix
@@ -83,7 +81,7 @@ class CreateLabellingFunctions:
                  label_model: str = 'data_programming'):
         
         self.device = device
-        self.encoder = Encoder(model_name=base_encoder, device=device)
+        self.encoder = models.Encoder(model_name=base_encoder, device=device)
         
         self.label_matrix = None
         self.keywords = None

@@ -15,7 +15,7 @@ h_sizes:
 - 256
 - 64
 - 2
-label_model: data_programming
+label_model: majority_vote
 label_model_lr: 0.01
 label_model_n_epochs: 100
 max_num: 7000
