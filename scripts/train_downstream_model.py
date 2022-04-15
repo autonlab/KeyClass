@@ -25,7 +25,7 @@ args_cmd = parser_cmd.parse_args()
 parser = Parser(config_file_path=args_cmd.config)
 args = parser.parse()
 
-with open(join(args['preds_path'], 'proba_preds.pkl'), 'rb') as f:
+with open(join(args['preds_path'], f"{args['label_model']}_proba_preds.pkl"), 'rb') as f:
     proba_preds = pkl.load(f)
 y_train_lm = np.argmax(proba_preds, axis=1)
 sample_weights = np.max(proba_preds, axis=1) # Sample weights for noise aware loss
