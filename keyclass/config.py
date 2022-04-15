@@ -13,7 +13,6 @@ class Parser:
 	def parse(self):
 		with open(self.config_file_path, 'rb') as f: 
 			self.config = load(f, Loader=Loader)
-		print(self.config)
 
 		for key, value in self.default_config.items():
 			if ('target' not in key) and ((key not in list(self.config.keys())) or (self.config[key] is None)):
