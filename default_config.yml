@@ -1,5 +1,6 @@
 activation: torch.nn.LeakyReLU()
 average: weighted
+use_custom_encoder: false
 base_encoder: paraphrase-mpnet-base-v2
 criterion: torch.nn.CrossEntropyLoss(reduction='none')
 data_path: /zfsauton/project/public/chufang/classes/

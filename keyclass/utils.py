@@ -1,5 +1,5 @@
 import json
-from os.path import join
+from os.path import join, exists
 import re
 from typing import List, Dict, Tuple, Iterable, Type, Union, Callable, Optional
 import numpy as np
@@ -165,11 +165,14 @@ def fetch_data(dataset='imdb', path='~/', split='train'):
 	    split: str
 	        Whether to fetch the train or test dataset. Options are one of 'train' or 'test'. 
     """
-    _dataset_names = ['agnews', 'amazon', 'dbpedia', 'imdb', 'mimic'] 
-    if dataset not in _dataset_names:
-        raise ValueError(f'Dataset must be one of {_dataset_names}, but received {dataset}.')
-    if split not in ['train', 'test']:
-        raise ValueError(f'split must be one of \'train\' or \'test\', but received {split}.')
+    #_dataset_names = ['agnews', 'amazon', 'dbpedia', 'imdb', 'mimic'] 
+    #if dataset not in _dataset_names:
+    #    raise ValueError(f'Dataset must be one of {_dataset_names}, but received {dataset}.')
+    #if split not in ['train', 'test']:
+    #    raise ValueError(f'split must be one of \'train\' or \'test\', but received {split}.')
+
+    if not exists(f"{join(path, dataset, split)}.txt"):
+        raise ValueError(f'File {split}.txt does not exists in {join(path, dataset)}')
 
     text = open(f'{join(path, dataset, split)}.txt').readlines()
 
@@ -177,3 +180,9 @@ def fetch_data(dataset='imdb', path='~/', split='train'):
         text = [cleantext(line) for line in text]
 
     return text 
+
+
+def mean_pooling(model_output, attention_mask):
+    token_embeddings = model_output[0] #First element of model_output contains all token embeddings
+    input_mask_expanded = attention_mask.unsqueeze(-1).expand(token_embeddings.size()).float()
+    return torch.sum(token_embeddings * input_mask_expanded, 1) / torch.clamp(input_mask_expanded.sum(1), min=1e-9)

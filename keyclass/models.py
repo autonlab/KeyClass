@@ -12,9 +12,113 @@ import snorkel.labeling
 from snorkel.labeling.model.label_model import LabelModel
 from snorkel.labeling.model.baselines import MajorityLabelVoter
 from snorkel.labeling import LFAnalysis 
+import warnings
+import utils
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
+
+class CustomEncoder(torch.nn.Module):
+    def __init__(self, 
+                 pretrained_model_name_or_path: str ='bionlp/bluebert_pubmed_mimic_uncased_L-12_H-768_A-12', 
+                 device: str = "cuda"):
+        super(CustomEncoder, Encoder, self).__init__()
+        """Custom encoder class
+
+            This custom encoder class allows KeyClass to use encoders beyond those 
+            in Sentence Transformers. Here, we will use the BlueBert-Base (Uncased)
+            language model trained on PubMed and MIMIC-III [1]. 
+            
+            Parameters
+            ---------- 
+            pretrained_model_name_or_path: str
+                Is either:
+                -- a string with the shortcut name of a pre-trained model configuration to load 
+                   from cache or download, e.g.: bert-base-uncased.
+                -- a string with the identifier name of a pre-trained model configuration that 
+                   was user-uploaded to our S3, e.g.: dbmdz/bert-base-german-cased.
+                -- a path to a directory containing a configuration file saved using the 
+                   save_pretrained() method, e.g.: ./my_model_directory/.
+                -- a path or url to a saved configuration JSON file, e.g.: ./my_model_directory/configuration.json.
+            
+            device: str
+                Device to use for encoding. 'cpu' by default. 
+
+            References
+            ----------
+            [1] Peng Y, Yan S, Lu Z. Transfer Learning in Biomedical Natural Language Processing: 
+                An Evaluation of BERT and ELMo on Ten Benchmarking Datasets. In Proceedings of the 
+                Workshop on Biomedical Natural Language Processing (BioNLP). 2019.
+        """
+        super(CustomEncoder, self).__init__()
+        self.tokenizer = AutoTokenizer.from_pretrained(pretrained_model_name_or_path)
+        self.model = AutoModel.from_pretrained(pretrained_model_name_or_path)
+        self.model.train()
+        # The model is set in evaluation mode by default using model.eval() 
+        # (Dropout modules are deactivated) To train the model, you should 
+        # first set it back in training mode with model.train()
+        
+        self.device = device
+
+        self.to(device)
+
+    # def encode(self, sentences: Union[str, List[str]], 
+    #            batch_size: int = 32, 
+    #            show_progress_bar: Optional[bool] = None, 
+    #            normalize_embeddings: bool = False):
+    #     """
+    #     Computes sentence embeddings using the forward function
+
+    #     Parameters
+    #     ---------- 
+    #     text: the text to embed
+    #     batch_size: the batch size used for the computation
+    #     """
+    #     if normalize_embeddings or show_progress_bar:
+    #         warnings.warn("This code does not support embedding normalization\
+    #          and progress tracking! Setting normalize_embeddings and\
+    #           show_progress_bar to False")
+    #         normalize_embeddings=False
+    #         show_progress_bar=False
+
+    #     self.model.eval() # Set model in evaluation mode. 
+    #     with torch.no_grad():
+    #         embeddings = self.forward(sentences, batch_size=batch_size, 
+    #                                   show_progress_bar=show_progress_bar, 
+    #                                   normalize_embeddings=normalize_embeddings).detach().cpu().numpy()
+    #     self.model.train()
+    #     return embeddings
+
+    def forward(self, sentences: Union[str, List[str]], 
+                batch_size: int = 32, 
+                show_progress_bar: Optional[bool] = None, 
+                normalize_embeddings: bool = False):
+        """
+        Computes sentence embeddings
+
+        
+        Parameters
+        ---------- 
+        sentences: the sentences to embed
+        batch_size: the batch size used for the computation
+        show_progress_bar: This option is not used, and primarily present due to compatibility. 
+        normalize_embeddings: This option is not used, and primarily present due to compatibility. 
+        """
+        if normalize_embeddings or show_progress_bar:
+            warnings.warn("This code does not support embedding normalization\
+             and progress tracking! Setting normalize_embeddings and\
+              show_progress_bar to False")
+            normalize_embeddings=False
+            show_progress_bar=False
+
+        tokenized_sentences = self.tokenizer(sentences, return_tensors='pt', truncation=True, max_length=512, padding=True)
+        tokenized_sentences = tokenized_sentences.to(self.device)
+        output = self.model(**tokenized_sentences)
+        
+        all_embeddings = utils.mean_pooling(output, tokenized_sentences['attention_mask'])
+        del tokenized_sentences
+        
+        return all_embeddings
 
 class Encoder(torch.nn.Module):
     def __init__(self, model_name: str ='all-mpnet-base-v2', 
@@ -161,7 +265,6 @@ class FeedForwardFlexible(torch.nn.Module):
                 probs_list.append(probs)
             self.train()
         return np.concatenate(probs_list, axis=0)
-
 
 class LabelModelWrapper:
     """Class to train any weak supervision label model. 
