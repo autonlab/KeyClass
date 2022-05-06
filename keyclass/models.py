@@ -22,7 +22,7 @@ class CustomEncoder(torch.nn.Module):
     def __init__(self, 
                  pretrained_model_name_or_path: str ='bionlp/bluebert_pubmed_mimic_uncased_L-12_H-768_A-12', 
                  device: str = "cuda"):
-        super(CustomEncoder, Encoder, self).__init__()
+        super(CustomEncoder, self).__init__()
         """Custom encoder class
 
             This custom encoder class allows KeyClass to use encoders beyond those 
@@ -62,32 +62,31 @@ class CustomEncoder(torch.nn.Module):
 
         self.to(device)
 
-    # def encode(self, sentences: Union[str, List[str]], 
-    #            batch_size: int = 32, 
-    #            show_progress_bar: Optional[bool] = None, 
-    #            normalize_embeddings: bool = False):
-    #     """
-    #     Computes sentence embeddings using the forward function
+    def encode(self, sentences: Union[str, List[str]], 
+               batch_size: int = 32, 
+               show_progress_bar: Optional[bool] = None, 
+               normalize_embeddings: bool = False):
+        """
+        Computes sentence embeddings using the forward function
 
-    #     Parameters
-    #     ---------- 
-    #     text: the text to embed
-    #     batch_size: the batch size used for the computation
-    #     """
-    #     if normalize_embeddings or show_progress_bar:
-    #         warnings.warn("This code does not support embedding normalization\
-    #          and progress tracking! Setting normalize_embeddings and\
-    #           show_progress_bar to False")
-    #         normalize_embeddings=False
-    #         show_progress_bar=False
-
-    #     self.model.eval() # Set model in evaluation mode. 
-    #     with torch.no_grad():
-    #         embeddings = self.forward(sentences, batch_size=batch_size, 
-    #                                   show_progress_bar=show_progress_bar, 
-    #                                   normalize_embeddings=normalize_embeddings).detach().cpu().numpy()
-    #     self.model.train()
-    #     return embeddings
+        Parameters
+        ---------- 
+        text: the text to embed
+        batch_size: the batch size used for the computation
+        """
+        if normalize_embeddings or show_progress_bar:
+            warnings.warn("This code does not support embedding normalization\
+             and progress tracking! Setting normalize_embeddings and\
+              show_progress_bar to False")
+            normalize_embeddings=False
+            show_progress_bar=False
+        self.model.eval() # Set model in evaluation mode. 
+        with torch.no_grad():
+            embeddings = self.forward(sentences, batch_size=batch_size, 
+                                      show_progress_bar=show_progress_bar, 
+                                      normalize_embeddings=normalize_embeddings).detach().cpu().numpy()
+        self.model.train()
+        return embeddings
 
     def forward(self, sentences: Union[str, List[str]], 
                 batch_size: int = 32, 
