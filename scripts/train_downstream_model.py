@@ -82,8 +82,12 @@ print(f'Training class distribution (label model predictions): {np.unique(y_trai
 
 # Train a downstream classifier
 
-encoder = models.Encoder(model_name=args['base_encoder'], 
-						 device=args['device'])
+if args['use_custom_encoder']:
+    encoder = models.CustomEncoder(pretrained_model_name_or_path=args['base_encoder'], 
+        device=args['device'])
+else:
+    encoder = models.Encoder(model_name=args['base_encoder'], 
+        device=args['device'])
 
 classifier = models.FeedForwardFlexible(encoder_model=encoder,
 										h_sizes=args['h_sizes'], 
