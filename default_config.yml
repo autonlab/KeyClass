@@ -42,3 +42,4 @@ target_1: good, positive, excellent, amazing, love, fine, good quality, would re
 topk: 300
 use_custom_encoder: false
 use_noise_aware_loss: true
+n_classes: 2

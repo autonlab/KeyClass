@@ -43,3 +43,4 @@ target_3: reimage, echo, review
 topk: 100
 use_custom_encoder: true
 use_noise_aware_loss: true
+n_classes: 4

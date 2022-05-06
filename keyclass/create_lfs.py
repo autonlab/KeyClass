@@ -93,7 +93,7 @@ class CreateLabellingFunctions:
     
     
     def get_labels(self, text_corpus, label_names, min_df, ngram_range, topk, 
-        y_train, label_model_lr, label_model_n_epochs, verbose=True):
+        y_train, label_model_lr, label_model_n_epochs, verbose=True, n_classes=2):
         ## main driver function
 
         ## get the bert embeddings of the categories
@@ -135,7 +135,7 @@ class CreateLabellingFunctions:
     #     print('labeler.label_matrix', np.unique(labeler.label_matrix, return_counts=True))
         label_model = models.LabelModelWrapper(\
             label_matrix=self.label_matrix, 
-            n_classes=len(np.unique(y_train)), 
+            n_classes=n_classes, 
             y_train=y_train, 
             device=self.device,
             model_name=self.label_model_name)
