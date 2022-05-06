@@ -5,7 +5,7 @@ import argparse
 import numpy as np
 import torch
 import os
-from os.path import join
+from os.path import join, exists
 import models
 import utils
 import train_classifier
