@@ -74,12 +74,6 @@ class CustomEncoder(torch.nn.Module):
         text: the text to embed
         batch_size: the batch size used for the computation
         """
-        if normalize_embeddings or show_progress_bar:
-            warnings.warn("This code does not support embedding normalization\
-             and progress tracking! Setting normalize_embeddings and\
-              show_progress_bar to False")
-            normalize_embeddings=False
-            show_progress_bar=False
         self.model.eval() # Set model in evaluation mode. 
         with torch.no_grad():
             embeddings = self.forward(sentences, batch_size=batch_size, 
@@ -103,19 +97,28 @@ class CustomEncoder(torch.nn.Module):
         show_progress_bar: This option is not used, and primarily present due to compatibility. 
         normalize_embeddings: This option is not used, and primarily present due to compatibility. 
         """
-        if normalize_embeddings or show_progress_bar:
-            warnings.warn("This code does not support embedding normalization\
-             and progress tracking! Setting normalize_embeddings and\
-              show_progress_bar to False")
-            normalize_embeddings=False
-            show_progress_bar=False
 
-        tokenized_sentences = self.tokenizer(sentences, return_tensors='pt', truncation=True, max_length=512, padding=True)
-        tokenized_sentences = tokenized_sentences.to(self.device)
-        output = self.model(**tokenized_sentences)
-        
-        all_embeddings = utils.mean_pooling(output, tokenized_sentences['attention_mask'])
-        del tokenized_sentences
+        all_embeddings = []
+
+        length_sorted_idx = np.argsort([-self.model._text_length(sen) for sen in sentences])
+        sentences_sorted = [sentences[idx] for idx in length_sorted_idx]
+
+        for start_index in trange(0, len(sentences), batch_size, desc="Batches", disable=not show_progress_bar):
+            sentences_batch = sentences_sorted[start_index:start_index+batch_size]
+
+            features = self.tokenizer(sentences_batch, return_tensors='pt', truncation=True, 
+                max_length=512, padding=True)
+            features = features.to(self.device)
+            out_features = self.model.forward(features)
+            embeddings = utils.mean_pooling(out_features, features['attention_mask'])
+           
+            if normalize_embeddings:
+                embeddings = torch.nn.functional.normalize(embeddings, p=2, dim=1)
+            
+            all_embeddings.extend(embeddings)
+
+        all_embeddings = [all_embeddings[idx] for idx in np.argsort(length_sorted_idx)]
+        all_embeddings = torch.stack(all_embeddings) # Converts to tensor
         
         return all_embeddings
 
