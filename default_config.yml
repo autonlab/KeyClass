@@ -1,6 +1,5 @@
 activation: torch.nn.LeakyReLU()
 average: weighted
-use_custom_encoder: false
 base_encoder: paraphrase-mpnet-base-v2
 criterion: torch.nn.CrossEntropyLoss(reduction='none')
 data_path: /zfsauton/project/public/chufang/classes/
@@ -41,4 +40,5 @@ target_0: negative, hate, expensive, bad, poor, broke, waste, horrible, would no
   recommend
 target_1: good, positive, excellent, amazing, love, fine, good quality, would recommend
 topk: 300
+use_custom_encoder: false
 use_noise_aware_loss: true

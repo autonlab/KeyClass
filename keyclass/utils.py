@@ -6,6 +6,7 @@ import numpy as np
 import joblib
 from sklearn.metrics import precision_score, recall_score
 from datetime import datetime
+import torch
 
 def log(metrics: Union[List, Dict], 
         filename: str,

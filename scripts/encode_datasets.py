@@ -23,8 +23,8 @@ else:
         device='cuda' if torch.cuda.is_available() else 'cpu')
 
 for split in ['train', 'test']:
-    sentences = utils.fetch_data(dataset=args['dataset'], split=split, path=args['data_path'])[:8]
-    embeddings = model.encode(sentences=sentences, batch_size=args['self_train_batch_size'], 
+    sentences = utils.fetch_data(dataset=args['dataset'], split=split, path=args['data_path'])
+    embeddings = model.encode(sentences=sentences, batch_size=args['end_model_batch_size'], 
                               show_progress_bar=args['show_progress_bar'], 
                               normalize_embeddings=args['normalize_embeddings'])
     with open(join(args['data_path'], args['dataset'], f'{split}_embeddings.pkl'), 'wb') as f:

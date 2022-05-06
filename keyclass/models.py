@@ -111,7 +111,7 @@ class CustomEncoder(torch.nn.Module):
             features = self.tokenizer(sentences_batch, return_tensors='pt', truncation=True, 
                 max_length=512, padding=True)
             features = features.to(self.device)
-            out_features = self.model.forward(features)
+            out_features = self.model.forward(**features)
             embeddings = utils.mean_pooling(out_features, features['attention_mask'])
            
             if normalize_embeddings:
