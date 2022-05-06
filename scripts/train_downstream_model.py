@@ -41,9 +41,16 @@ with open(join(args['data_path'], args['dataset'], f'test_embeddings.pkl'), 'rb'
         X_test_embed = pkl.load(f)
 
 # Load training and testing ground truth labels
-with open(join(args['data_path'], args['dataset'], f'train_labels.txt'), 'r') as f:
-        y_train = f.readlines()
-y_train = np.array([int(i.replace('\n','')) for i in y_train])
+training_labels_present = False
+if exists(join(args['data_path'], args['dataset'], 'train_labels.txt')):
+	with open(join(args['data_path'], args['dataset'], f'train_labels.txt'), 'r') as f:
+	        y_train = f.readlines()
+	y_train = np.array([int(i.replace('\n','')) for i in y_train])
+else:
+    y_train = None
+    training_labels_present = False
+    print('No training labels found!')
+
 with open(join(args['data_path'], args['dataset'], f'test_labels.txt'), 'r') as f:
         y_test = f.readlines()
 y_test = np.array([int(i.replace('\n','')) for i in y_test])
@@ -51,22 +58,26 @@ y_test = np.array([int(i.replace('\n','')) for i in y_test])
 # Print data statistics
 print('\n==== Data statistics ====')
 print(f'Size of training data: {X_train_embed.shape}, testing data: {X_test_embed.shape}')
-print(f'Size of training labels: {y_train.shape}, testing labels: {y_test.shape}')
-print(f'Training class distribution (ground truth): {np.unique(y_train, return_counts=True)[1]/len(y_train)}')
+print(f'Size of testing labels: {y_test.shape}')
+if training_labels_present:
+	print(f'Size of training labels: {y_train.shape}')
+	print(f'Training class distribution (ground truth): {np.unique(y_train, return_counts=True)[1]/len(y_train)}')
 print(f'Training class distribution (label model predictions): {np.unique(y_train_lm, return_counts=True)[1]/len(y_train_lm)}')
 
 print('\nKeyClass only trains on the most confidently labeled data points! Applying mask...')
 print('\n==== Data statistics (after applying mask) ====')
 
-y_train_masked = y_train[mask]
+if training_labels_present:
+	y_train_masked = y_train[mask]
 y_train_lm_masked = y_train_lm[mask]
 proba_preds_masked = proba_preds[mask]
 X_train_embed_masked = X_train_embed[mask]
 sample_weights_masked = sample_weights[mask]
 
 print(f'Size of training data: {X_train_embed_masked.shape}')
-print(f'Size of training labels: {y_train_masked.shape}')
-print(f'Training class distribution (ground truth): {np.unique(y_train_masked, return_counts=True)[1]/len(y_train_masked)}')
+if training_labels_present:
+	print(f'Size of training labels: {y_train_masked.shape}')
+	print(f'Training class distribution (ground truth): {np.unique(y_train_masked, return_counts=True)[1]/len(y_train_masked)}')
 print(f'Training class distribution (label model predictions): {np.unique(y_train_lm_masked, return_counts=True)[1]/len(y_train_lm_masked)}')
 
 # Train a downstream classifier
@@ -110,11 +121,12 @@ with open(join(args['preds_path'], 'end_model_preds_test.pkl'), 'wb') as f:
     pkl.dump(end_model_preds_test, f)
 
 # Print statistics
-training_metrics_with_gt = utils.compute_metrics(y_preds=np.argmax(end_model_preds_train, axis=1), 
-	y_true=y_train_masked, average=args['average'])
-utils.log(metrics=training_metrics_with_gt, 
-	filename='end_model_with_ground_truth', 
-	results_dir=args['results_path'], split='train')
+if training_labels_present:
+	training_metrics_with_gt = utils.compute_metrics(y_preds=np.argmax(end_model_preds_train, axis=1), 
+		y_true=y_train_masked, average=args['average'])
+	utils.log(metrics=training_metrics_with_gt, 
+		filename='end_model_with_ground_truth', 
+		results_dir=args['results_path'], split='train')
 
 training_metrics_with_lm = utils.compute_metrics(y_preds=np.argmax(end_model_preds_train, axis=1), 
 	y_true=y_train_lm_masked, average=args['average'])
