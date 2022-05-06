@@ -100,7 +100,9 @@ class CustomEncoder(torch.nn.Module):
 
         all_embeddings = []
 
-        length_sorted_idx = np.argsort([-self.model._text_length(sen) for sen in sentences])
+        length_sorted_idx = np.argsort([-utils._text_length(sen) for sen in sentences])
+        # length_sorted_idx = np.argsort([-self.model._text_length(sen) for sen in sentences])
+
         sentences_sorted = [sentences[idx] for idx in length_sorted_idx]
 
         for start_index in trange(0, len(sentences), batch_size, desc="Batches", disable=not show_progress_bar):
@@ -187,7 +189,9 @@ class Encoder(torch.nn.Module):
 
         all_embeddings = []
 
-        length_sorted_idx = np.argsort([-self.model._text_length(sen) for sen in sentences])
+        length_sorted_idx = np.argsort([-utils._text_length(sen) for sen in sentences])
+        # length_sorted_idx = np.argsort([-self.model._text_length(sen) for sen in sentences])
+        
         sentences_sorted = [sentences[idx] for idx in length_sorted_idx]
 
         for start_index in trange(0, len(sentences), batch_size, desc="Batches", disable=not show_progress_bar):

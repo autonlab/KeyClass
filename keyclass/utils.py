@@ -185,4 +185,23 @@ def fetch_data(dataset='imdb', path='~/', split='train'):
 def mean_pooling(model_output, attention_mask):
     token_embeddings = model_output[0] #First element of model_output contains all token embeddings
     input_mask_expanded = attention_mask.unsqueeze(-1).expand(token_embeddings.size()).float()
+    
     return torch.sum(token_embeddings * input_mask_expanded, 1) / torch.clamp(input_mask_expanded.sum(1), min=1e-9)
+
+def _text_length(text: Union[List[int], List[List[int]]]):
+    """
+    Help function to get the length for the input text. Text can be either
+    a list of ints (which means a single text as input), or a tuple of list of ints
+    (representing several text inputs to the model).
+
+    Adapted from https://github.com/UKPLab/sentence-transformers/blob/40af04ed70e16408f466faaa5243bee6f476b96e/sentence_transformers/SentenceTransformer.py#L548
+    """
+
+    if isinstance(text, dict):              #{key: value} case
+        return len(next(iter(text.values())))
+    elif not hasattr(text, '__len__'):      #Object has no len() method
+        return 1
+    elif len(text) == 0 or isinstance(text[0], int):    #Empty string or list of ints
+        return len(text)
+    else:
+        return sum([len(t) for t in text])      #Sum of length of individual strings
