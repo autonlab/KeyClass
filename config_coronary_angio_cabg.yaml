@@ -14,25 +14,26 @@ h_sizes:
 - 768
 - 256
 - 64
-- 2
+- 4
 label_model: data_programming
 label_model_lr: 0.01
 label_model_n_epochs: 100
-max_num: 7000
+max_num: 500
 min_df: 0.001
 model_path: ../models/coronary_angio_cabg/
 n_bootstrap: 100
+n_classes: 4
 n_jobs: 10
 ngram_range: !!python/tuple
 - 1
 - 3
 normalize_embeddings: false
-preds_path: ../results/ccoronary_angio_cabg/
+preds_path: ../results/coronary_angio_cabg/
 q_update_interval: 50
 results_path: ../results/coronary_angio_cabg/
-self_train_batch_size: 4
+self_train_batch_size: 8
 self_train_lr: 1e-6
-self_train_patience: 3
+self_train_patience: 8
 self_train_thresh: 1-2e-3
 self_train_weight_decay: 1e-4
 show_progress_bar: true
@@ -40,7 +41,6 @@ target_0: no intervention, contine, smoke, management, asprin,
 target_1: stent, balloon, mm, placed, elut
 target_2: cabg, surgeon, disease, significant, severe
 target_3: reimage, echo, review
-topk: 100
+topk: 50
 use_custom_encoder: true
 use_noise_aware_loss: true
-n_classes: 4
