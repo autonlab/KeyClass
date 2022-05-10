@@ -1,8 +1,8 @@
 # Label all the datasets
 
-CONFIG="../config_coronary_angio_cabg.yml"
+CONFIG="../config_coronary_angio_cabg.yml" # Add path to your config file
  
-export CUDA_VISIBLE_DEVICES=3
+export CUDA_VISIBLE_DEVICES=3 # Comment if you want to run on all the GPUs. 
 
 echo "======================="
 echo "Encoding the dataset..."
