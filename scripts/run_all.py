@@ -1,7 +1,10 @@
 import argparse
 import label_data, encode_datasets, train_downstream_model
+from mlflow import log_metric, log_param, log_artifacts
+import mlflow.pytorch
 
 def main(args):
+    
     print("Labeling Data")
     label_data.run(args)
     print("Encoding Dataset")
@@ -9,8 +12,9 @@ def main(args):
     print("Training Model")
     results = train_downstream_model.run(args)
     print("Model Results:")
-    print(results)
 
+    print(results)
+    mlflow.log_metrics('results[0,0])
 
 if __name__ == "__main__":
     parser_cmd = argparse.ArgumentParser()

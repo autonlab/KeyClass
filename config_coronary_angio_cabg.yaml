@@ -1,8 +1,8 @@
 activation: torch.nn.LeakyReLU()
 average: weighted
-base_encoder: paraphrase-mpnet-base-v2 # bionlp/bluebert_pubmed_mimic_uncased_L-12_H-768_A-12
+base_encoder: paraphrase-mpnet-base-v2
 criterion: torch.nn.CrossEntropyLoss(reduction='none')
-data_path: /zfsauton/project/public/Mononito/
+data_path: /zfsauton/data/public/redman/
 dataset: coronary_angio_nlp
 device: cuda
 end_model_batch_size: 128
@@ -37,9 +37,9 @@ self_train_patience: 8
 self_train_thresh: 1-2e-3
 self_train_weight_decay: 1e-4
 show_progress_bar: true
-target_0: no intervention, continue, smoke, management, asprin,
-target_1: stent, balloon, mm, placed, elut
-target_2: cabg, surgeon, disease, significant, severe
+target_0: no intervention, continue, smoke, management, asprin, healthy
+target_1: stent, balloon, mm, placed, elut, inserted
+target_2: cabg, surgeon, disease, significant, severe, bypass, surgery
 target_3: reimage, echo, review
 topk: 50
 use_custom_encoder: false
