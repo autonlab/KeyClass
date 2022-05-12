@@ -37,7 +37,7 @@ self_train_patience: 8
 self_train_thresh: 1-2e-3
 self_train_weight_decay: 1e-4
 show_progress_bar: true
-target_0: medical therapy, no intervention, continue, smoke, management, aspirin, return, ldl, statin
+target_0: medical therapy, no intervention, continue, smoke, management, aspirin, return, ldl, statin, follow-up, follow up
 target_1: percutaneous coronary intervention, pci, stent, balloon, milimeter mm, placed, elut, plavix, ticagrelor, brilinta
 target_2: coronary artery bypass grafting, cabg, surgeon, disease, significant, severe, emergency, total occlusion, left main mild
 target_3: reschedule, incomplete exam, weeks, months, years, days, complicated, reimage, echo, review
