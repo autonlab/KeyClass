@@ -37,10 +37,10 @@ self_train_patience: 8
 self_train_thresh: 1-2e-3
 self_train_weight_decay: 1e-4
 show_progress_bar: true
-target_0: no intervention, continue, smoke, management, asprin,
-target_1: stent, balloon, mm, placed, elut
-target_2: cabg, surgeon, disease, significant, severe
-target_3: reimage, echo, review
+target_0: medical therapy, no intervention, continue, smoke, management, aspirin, return, ldl, statin
+target_1: percutaneous coronary intervention, pci, stent, balloon, milimeter mm, placed, elut, plavix, ticagrelor, brilinta
+target_2: coronary artery bypass grafting, cabg, surgeon, disease, significant, severe, emergency, total occlusion, left main mild
+target_3: reschedule, incomplete exam, weeks, months, years, days, complicated, reimage, echo, review
 topk: 50
 use_custom_encoder: false
 use_noise_aware_loss: true
