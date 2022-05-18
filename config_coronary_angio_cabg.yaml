@@ -37,9 +37,9 @@ self_train_patience: 8
 self_train_thresh: 1-2e-3
 self_train_weight_decay: 1e-4
 show_progress_bar: true
-target_0: no intervention, continue, smoke, management, asprin, healthy
-target_1: stent, balloon, mm, placed, elut, inserted
-target_2: cabg, surgeon, disease, significant, severe, bypass, surgery
+target_0: no intervention, continue, smoke, management, asprin, healthy, under
+target_1: stent, balloon, millimeter (mm), placed, elut, inserted, lad, RCA
+target_2: cabg, surgeon, disease, significant, severe, bypass, surgery, over
 target_3: reimage, echo, review
 topk: 50
 use_custom_encoder: false
