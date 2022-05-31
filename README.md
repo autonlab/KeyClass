@@ -153,7 +153,7 @@ Note, some libraries exists to do this for you. For PyTorch, check out the `skor
 
 # Installation
 
-Python 3.6+ are supported. Linux, macOS, and Windows are supported.
+Python 3.8+ are supported. Linux, macOS, and Windows are supported.
 
 <!---
 Stable release (pip):
@@ -174,12 +174,13 @@ Developer release:
 $ pip install git+https://github.com/cleanlab/cleanlab.git
 ```
 --->
-Install the following packages:
+Setup the environment with the following steps: 
 
 ``` bash
-$ conda install -c conda-forge snorkel sentence-transformers
-$ conda install -c huggingface 
-$ conda install -c huggingface tokenizers=0.10.1 transformers
+$ conda create -n keyclass python=3.8
+$ conda activate keyclass
+$ conda install -c conda-forge snorkel=0.9.8 sentence-transformers=2.0.0
+$ conda install -c huggingface transformers=4.6.1 tokenizers=0.10.1
 $ conda install -c anaconda jupyter
 ```
 
