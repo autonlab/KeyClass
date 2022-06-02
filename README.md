@@ -179,9 +179,12 @@ Setup the environment with the following steps:
 ``` bash
 $ conda create -n keyclass python=3.8
 $ conda activate keyclass
-$ conda install -c conda-forge snorkel=0.9.8 sentence-transformers=2.0.0
-$ conda install -c huggingface transformers=4.6.1 tokenizers=0.10.1
-$ conda install -c anaconda jupyter
+$ conda install -c pytorch pytorch=1.10.0 cudatoolkit=10.2
+$ conda install -c conda-forge snorkel=0.9.8
+$ conda install -c huggingface tokenizers=0.10.1
+$ conda install -c huggingface transformers=4.11.3
+$ conda install -c conda-forge sentence-transformers=2.0.0
+$ conda install jupyter notebook
 ```
 
 
