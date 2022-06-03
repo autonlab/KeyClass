@@ -49,7 +49,7 @@ def train(model: torch.nn.Module,
     batch_size: Number of samples to feed into the model before updating hyperparameters
     criterion: Loss function (or Optimizer)
     raw_text: Boolean Flag describing if raw text is to be processed (True if processing raw text, else False)
-    lr: Learning rate
+    lr: Learning Rate
     weight_decay: Weight decay parameter (for regularization/to prevent overfitting) 
     patience: Number of consecutive epochs of no performance improvement before terminating training (for early stopping)
     """
