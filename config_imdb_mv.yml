@@ -1,15 +1,15 @@
 activation: torch.nn.LeakyReLU() # activation: Activation function to be use in the MLP
 average: weighted
-base_encoder: paraphrase-mpnet-base-v2
-criterion: torch.nn.CrossEntropyLoss(reduction='none')
+base_encoder: paraphrase-mpnet-base-v2 # encoder_model: The base encoder model
+criterion: torch.nn.CrossEntropyLoss(reduction='none') # criterion: Loss function (or Optimizer)
 data_path: /zfsauton/project/public/chufang/classes/
 dataset: imdb
-device: cuda
-end_model_batch_size: 128
-end_model_epochs: 20
-end_model_lr: 1e-4
-end_model_patience: 3
-end_model_weight_decay: 1e-4
+device: cuda # device: Device to use for training. 'cuda' by default
+end_model_batch_size: 128 # batch_size: Number of samples to feed into the model before updating hyperparameters for end model
+end_model_epochs: 20 # epochs: Number of complete passes of the training data through the model for end model
+end_model_lr: 1e-4 # lr: Learning rate for end model
+end_model_patience: 3 # patience: Number of consecutive epochs of no performance improvement before terminating training (for early stopping) for end model
+end_model_weight_decay: 1e-4 # weight_decay: Weight decay parameter (for regularization/to prevent overfitting) for end model
 h_sizes: # h_sizes: Linear layer sizes to be used in the MLP
 - 768
 - 256

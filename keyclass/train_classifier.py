@@ -40,7 +40,18 @@ def train(model: torch.nn.Module,
 
     Parameters
     ----------
-
+    model: Deep Learning Model to train
+    X_train: Training Data Features
+    y_train: Training Data Ground Truth
+    device: Device to use for training. 'cuda' by default
+    sample_weights: Array of weights assigned to individual samples
+    epochs: Number of complete passes of the training data through the model
+    batch_size: Number of samples to feed into the model before updating hyperparameters
+    criterion: Loss function (or Optimizer)
+    raw_text: Boolean Flag describing if raw text is to be processed (True if processing raw text, else False)
+    lr: Learning rate
+    weight_decay: Weight decay parameter (for regularization/to prevent overfitting) 
+    patience: Number of consecutive epochs of no performance improvement before terminating training (for early stopping)
     """
     if isinstance(y_train, np.ndarray):
         y_train = torch.from_numpy(y_train)
