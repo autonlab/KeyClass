@@ -1,4 +1,4 @@
-activation: torch.nn.LeakyReLU()
+activation: torch.nn.LeakyReLU() # activation: Activation function to be use in the MLP
 average: weighted
 base_encoder: paraphrase-mpnet-base-v2
 criterion: torch.nn.CrossEntropyLoss(reduction='none')
@@ -10,7 +10,7 @@ end_model_epochs: 20
 end_model_lr: 1e-4
 end_model_patience: 3
 end_model_weight_decay: 1e-4
-h_sizes:
+h_sizes: # h_sizes: Linear layer sizes to be used in the MLP
 - 768
 - 256
 - 64
