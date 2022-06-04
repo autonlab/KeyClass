@@ -1,9 +1,9 @@
 activation: torch.nn.LeakyReLU() # activation: Activation function to be use in the MLP
-average: weighted
+average: weighted # average: This parameter is required for multiclass/multilabel targets. If None, the scores for each class are returned. Otherwise, this determines the type of averaging performed on the data.
 base_encoder: paraphrase-mpnet-base-v2 # encoder_model: The base encoder model
 criterion: torch.nn.CrossEntropyLoss(reduction='none') # criterion: Loss function (or Optimizer)
-data_path: /zfsauton/project/public/chufang/classes/
-dataset: imdb
+data_path: /zfsauton/project/public/chufang/classes/ # path: Path to the stored data
+dataset: imdb # dataset: Name of dataset whose data will be fetched
 device: cuda # device: Device to use for training. 'cuda' by default
 end_model_batch_size: 128 # batch_size: Number of samples to feed into the model before updating hyperparameters for end model
 end_model_epochs: 20 # epochs: Number of complete passes of the training data through the model for end model
@@ -18,26 +18,26 @@ h_sizes: # h_sizes: Linear layer sizes to be used in the MLP
 label_model: majority_vote
 label_model_lr: 0.01
 label_model_n_epochs: 100
-max_num: 7000
+max_num: 7000 # max_num: Maximum number of data points per class
 min_df: 0.001
 model_path: ../models/imdb/
-n_bootstrap: 100
-n_jobs: 10
+n_bootstrap: 100 # n_bootstrap: Number of boostrap samples to compute CI
+n_jobs: 10 # n_jobs: Number of jobs to run in parallel
 ngram_range: !!python/tuple
 - 1
 - 3
 normalize_embeddings: false
 preds_path: ../results/imdb/
-q_update_interval: 50
+q_update_interval: 50 # q_update_interval: Number of steps before q is updated
 results_path: ../results/imdb/
-self_train_batch_size: 8
-self_train_lr: 1e-6
-self_train_patience: 3
-self_train_thresh: 1-2e-3
-self_train_weight_decay: 1e-4
+self_train_batch_size: 8 # batch_size: Number of samples to feed into the model before updating hyperparameters for self training
+self_train_lr: 1e-6 #lr: Learning Rate for self training
+self_train_patience: 3 # patience: Number of consecutive epochs of no performance improvement before terminating training (for early stopping) for self training
+self_train_thresh: 1-2e-3 # self_train_thresh: If p matches q at a rate above this threshold for "patience" number of epochs, then self training will stop early (if predictions p are not flipping, stop early)
+self_train_weight_decay: 1e-4 # weight_decay: Weight decay parameter (for regularization/to prevent overfitting) for self training
 show_progress_bar: true
 target_0: negative, hate, expensive, bad, poor, broke, waste, horrible, would not
   recommend
 target_1: good, positive, excellent, amazing, love, fine, good quality, would recommend
 topk: 300
-use_noise_aware_loss: true
+use_noise_aware_loss: true # Boolean param for if you want to use noise aware loss (sample weights for training will be masked if true)
