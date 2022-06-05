@@ -4,7 +4,7 @@ base_encoder: paraphrase-mpnet-base-v2 # encoder_model: The base encoder model
 criterion: torch.nn.CrossEntropyLoss(reduction='none') # criterion: Loss function (or Optimizer)
 data_path: /zfsauton/project/public/chufang/classes/ # path: Path to the stored data
 dataset: imdb # dataset: Name of dataset whose data will be fetched
-device: cuda # device: Device to use for training. 'cuda' by default
+device: cuda # device: Device to use for training
 end_model_batch_size: 128 # batch_size: Number of samples to feed into the model before updating hyperparameters for end model
 end_model_epochs: 20 # epochs: Number of complete passes of the training data through the model for end model
 end_model_lr: 1e-4 # lr: Learning rate for end model
