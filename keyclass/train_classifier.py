@@ -148,7 +148,7 @@ def self_train(model: torch.nn.Module,
     q_update_interval: Number of steps before q is updated for self training
     patience: Number of consecutive epochs of no performance improvement before terminating training (for early stopping) for self training
     self_train_thresh: If p matches q at a rate above this threshold for "patience" number of epochs, then self training will stop early (if predictions p are not flipping, stop early)
-    print_eval: 
+    print_eval: Boolean - prints validation metrics if True, and does not if False
     """
     model.train()
     model.zero_grad()
