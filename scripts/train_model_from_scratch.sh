@@ -1,7 +1,7 @@
 # Label all the datasets
 
 # CONFIG="/zfsauton2/home/mgoswami/KeyClass/config_coronary_angio_cabg.yaml" # Add path to your config file
-CONFIG="../config_coronary_angio_cabg.yaml" # Add path to your config file
+CONFIG="../config_imdb_mv.yml" # Add path to your config file
  
 export CUDA_VISIBLE_DEVICES=3 # Comment if you want to run on all the GPUs. 
 
