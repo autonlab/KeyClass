@@ -6,6 +6,8 @@ Classifying Unstructured Clinical Notes via Automatic Weak Supervision --->
 - [ ] Add tutorial(s)
 - [ ] Add the 1-3 line code snippet
 - [ ] Complete Readme
+- [ ] Make a base class for the encoders. The custom encoder class is iffy now
+- [ ] Add __str__ methods for each of the classes
 
 ----
 <!--- ![](https://raw.githubusercontent.com/cleanlab/assets/master/cleanlab/cleanlab_logo.png)--->
