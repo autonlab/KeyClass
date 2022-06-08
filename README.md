@@ -6,6 +6,8 @@ Classifying Unstructured Clinical Notes via Automatic Weak Supervision --->
 - [ ] Add tutorial(s)
 - [ ] Add the 1-3 line code snippet
 - [ ] Complete Readme
+- [ ] Make a base class for the encoders. The custom encoder class is iffy now
+- [ ] Add __str__ methods for each of the classes
 
 ----
 <!--- ![](https://raw.githubusercontent.com/cleanlab/assets/master/cleanlab/cleanlab_logo.png)--->
@@ -153,7 +155,7 @@ Note, some libraries exists to do this for you. For PyTorch, check out the `skor
 
 # Installation
 
-Python 3.6+ are supported. Linux, macOS, and Windows are supported.
+Python 3.8+ are supported. Linux, macOS, and Windows are supported.
 
 <!---
 Stable release (pip):
@@ -174,13 +176,17 @@ Developer release:
 $ pip install git+https://github.com/cleanlab/cleanlab.git
 ```
 --->
-Install the following packages:
+Setup the environment with the following steps: 
 
 ``` bash
-$ conda install -c conda-forge snorkel sentence-transformers
-$ conda install -c huggingface 
-$ conda install -c huggingface tokenizers=0.10.1 transformers
-$ conda install -c anaconda jupyter
+$ conda create -n keyclass python=3.8
+$ conda activate keyclass
+$ conda install -c pytorch pytorch=1.10.0 cudatoolkit=10.2
+$ conda install -c conda-forge snorkel=0.9.8
+$ conda install -c huggingface tokenizers=0.10.1
+$ conda install -c huggingface transformers=4.11.3
+$ conda install -c conda-forge sentence-transformers=2.0.0
+$ conda install jupyter notebook
 ```
 
 
