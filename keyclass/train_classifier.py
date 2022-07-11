@@ -40,7 +40,18 @@ def train(model: torch.nn.Module,
 
     Parameters
     ----------
-
+    model: ML/DL Model to train
+    X_train: Training Data Features
+    y_train: Training Data Ground Truth
+    device: Device to use for training. 'cuda' by default
+    sample_weights: Array of weights assigned to individual samples
+    epochs: Number of complete passes of the training data through the model
+    batch_size: Number of samples to feed into the model before updating hyperparameters
+    criterion: Loss function (or Optimizer)
+    raw_text: Boolean Flag describing if raw text is to be processed (True if processing raw text, else False)
+    lr: Learning Rate
+    weight_decay: Weight decay parameter (for regularization/to prevent overfitting) 
+    patience: Number of consecutive epochs of no performance improvement before terminating training (for early stopping)
     """
     if isinstance(y_train, np.ndarray):
         y_train = torch.from_numpy(y_train)
@@ -126,7 +137,18 @@ def self_train(model: torch.nn.Module,
 
     Parameters
     ----------
-
+    model: ML/DL model to self train on
+    X_train: Feature vectors for training dataset
+    X_val: Feature vectors for validation
+    y_val: Ground Truths for validation
+    device: Device to use for self training. 'cuda' by default
+    lr: Learning Rate for self training
+    weight_decay: Weight decay parameter (for regularization/to prevent overfitting) for self training
+    batch_size: Number of samples to feed into the model before updating hyperparameters for self training
+    q_update_interval: Number of steps before q is updated for self training
+    patience: Number of consecutive epochs of no performance improvement before terminating training (for early stopping) for self training
+    self_train_thresh: If p matches q at a rate above this threshold for "patience" number of epochs, then self training will stop early (if predictions p are not flipping, stop early)
+    print_eval: Boolean - prints validation metrics if True, and does not if False
     """
     model.train()
     model.zero_grad()
