@@ -22,6 +22,7 @@ max_num: 7000
 min_df: 0.001
 model_path: ../models/imdb/
 n_bootstrap: 100
+n_classes: 2
 n_jobs: 10
 ngram_range: !!python/tuple
 - 1
@@ -42,4 +43,3 @@ target_1: good, positive, excellent, amazing, love, fine, good quality, would re
 topk: 300
 use_custom_encoder: false
 use_noise_aware_loss: true
-n_classes: 2

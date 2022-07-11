@@ -1,8 +1,8 @@
 activation: torch.nn.LeakyReLU()
 average: weighted
-base_encoder: paraphrase-mpnet-base-v2 # bionlp/bluebert_pubmed_mimic_uncased_L-12_H-768_A-12
+base_encoder: paraphrase-mpnet-base-v2
 criterion: torch.nn.CrossEntropyLoss(reduction='none')
-data_path: /zfsauton/project/public/Mononito/
+data_path: /zfsauton/data/public/redman/
 dataset: coronary_angio_nlp
 device: cuda
 end_model_batch_size: 128
