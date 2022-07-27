@@ -64,7 +64,7 @@ class CustomEncoder(torch.nn.Module):
 
     def encode(self, sentences: Union[str, List[str]], 
                batch_size: int = 32, 
-               show_progress_bar: Optional[bool] = None, 
+               show_progress_bar: Optional[bool] = False, 
                normalize_embeddings: bool = False):
         """
         Computes sentence embeddings using the forward function
@@ -106,6 +106,7 @@ class CustomEncoder(torch.nn.Module):
         sentences_sorted = [sentences[idx] for idx in length_sorted_idx]
 
         for start_index in trange(0, len(sentences), batch_size, desc="Batches", disable=not show_progress_bar):
+        # for start_index in range(0, len(sentences), batch_size):
             sentences_batch = sentences_sorted[start_index:start_index+batch_size]
 
             features = self.tokenizer(sentences_batch, return_tensors='pt', truncation=True, 
@@ -147,7 +148,7 @@ class Encoder(torch.nn.Module):
 
     def encode(self, sentences: Union[str, List[str]], 
                batch_size: int = 32, 
-               show_progress_bar: Optional[bool] = None, 
+               show_progress_bar: Optional[bool] = False, 
                normalize_embeddings: bool = False):
         """
         Computes sentence embeddings using the forward function
@@ -156,6 +157,7 @@ class Encoder(torch.nn.Module):
         ---------- 
         text: the text to embed
         batch_size: the batch size used for the computation
+        show_progress_bar: This option is not used, and primarily present due to compatibility. 
         """
         self.model.eval() # Set model in evaluation mode. 
         with torch.no_grad():
@@ -167,7 +169,7 @@ class Encoder(torch.nn.Module):
 
     def forward(self, sentences: Union[str, List[str]], 
                 batch_size: int = 32, 
-                show_progress_bar: Optional[bool] = None, 
+                show_progress_bar: Optional[bool] = False, 
                 normalize_embeddings: bool = False):
         """
         Computes sentence embeddings
@@ -177,15 +179,15 @@ class Encoder(torch.nn.Module):
         ---------- 
         sentences: the sentences to embed
         batch_size: the batch size used for the computation
-        show_progress_bar: Output a progress bar when encode sentences
+        show_progress_bar: This option is not used, and primarily present due to compatibility. 
         normalize_embeddings: If set to true, returned vectors will have length 1. In that case, the faster dot-product (util.dot_score) instead of cosine similarity can be used.
         """
         # Cannot use encode due to torch no_grad in sentence transformers
         # x = self.model.encode(x, convert_to_numpy=False, convert_to_tensor=True, batch_size=len(x), show_progress_bar=False)
         # Logic from https://github.com/UKPLab/sentence-transformers/blob/8822bc4753849f816575ab95261f5c6ab7c71d01/sentence_transformers/SentenceTransformer.py#L110
         
-        if show_progress_bar is None:
-            show_progress_bar = (logger.getEffectiveLevel()==logging.INFO or logger.getEffectiveLevel()==logging.DEBUG)
+        # if show_progress_bar is None:
+        #     show_progress_bar = (logger.getEffectiveLevel()==logging.INFO or logger.getEffectiveLevel()==logging.DEBUG)
 
         all_embeddings = []
 
@@ -264,7 +266,8 @@ class FeedForwardFlexible(torch.nn.Module):
             self.eval()
             probs_list = []
             N = len(x_test)
-            for i in trange(0, N, batch_size, unit='batches'):
+            # for i in trange(0, N, batch_size, unit='batches'):
+            for i in range(0, N, batch_size):
                 if raw_text == False: test_batch = x_test[i:i+batch_size].to(self.device)
                 else: test_batch = x_test[i:i+batch_size]
                 probs = self.forward(test_batch, mode='inference', raw_text=raw_text).cpu().numpy()

@@ -22,6 +22,7 @@ max_num: 250000
 min_df: 0.001
 model_path: ../models/dbpedia/
 n_bootstrap: 100
+n_classes: 14
 n_jobs: 10
 ngram_range: !!python/tuple
 - 1
@@ -33,7 +34,7 @@ results_path: ../results/dbpedia/
 self_train_batch_size: 8
 self_train_lr: 1e-6
 self_train_patience: 3
-self_train_thresh: 1-2e-3
+self_train_thresh: 1-5e-3
 self_train_weight_decay: 1e-4
 show_progress_bar: true
 target_00: company
@@ -50,5 +51,6 @@ target_10: plant, tree
 target_11: album
 target_12: film
 target_13: novel, publication, book
-topk: 15
+topk: 37
+use_custom_encoder: false
 use_noise_aware_loss: true

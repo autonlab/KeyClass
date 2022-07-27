@@ -124,7 +124,7 @@ def train(model: torch.nn.Module,
 def self_train(model: torch.nn.Module, 
                X_train: Union[str, List[str]], 
                X_val: Union[str, List[str]], 
-               y_val: Union[np.ndarray], 
+               y_val: np.ndarray, 
                device: torch.device = torch.device("cuda"), 
                lr: float = 1e-5, 
                weight_decay: float = 1e-4, 
@@ -171,8 +171,7 @@ def self_train(model: torch.nn.Module,
         inds = np.random.randint(0, N, batch_size*q_update_interval)
         
         with torch.no_grad():
-            pred_proba = model.predict_proba(X_train[inds], 
-                batch_size=batch_size, raw_text=True) 
+            pred_proba = model.predict_proba(X_train[inds], batch_size=batch_size, raw_text=True) 
             target_dist  = get_q_soft(pred_proba) # should be of size (N, num_categories)
             target_preds = np.argmax(target_dist, axis=1)
             
@@ -199,6 +198,7 @@ def self_train(model: torch.nn.Module,
         
         if print_eval==True:
             val_preds = model.predict(X_val)
+            # print('tolcount', tolcount, 'self_train_agreement', self_train_agreement, 'validation_accuracy', np.mean(val_preds==y_val))
 
         pbar.set_postfix(tolerance_count=tolcount, 
                 self_train_agreement=self_train_agreement, 

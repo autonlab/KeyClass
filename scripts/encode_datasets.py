@@ -6,11 +6,9 @@ from os.path import join
 import utils
 import models
 import pickle
-from config import Parser
 
 def run(args_cmd):
-    parser = Parser(config_file_path=args_cmd.config)
-    args = parser.parse()
+    args = utils.Parser(config_file_path=args_cmd.config).parse()
 
     if args['use_custom_encoder']:
         model = models.CustomEncoder(pretrained_model_name_or_path=args['base_encoder'], 
@@ -22,8 +20,8 @@ def run(args_cmd):
     for split in ['train', 'test']:
         sentences = utils.fetch_data(dataset=args['dataset'], split=split, path=args['data_path'])
         embeddings = model.encode(sentences=sentences, batch_size=args['end_model_batch_size'], 
-                                show_progress_bar=args['show_progress_bar'], 
-                                normalize_embeddings=args['normalize_embeddings'])
+                                  show_progress_bar=args['show_progress_bar'], 
+                                  normalize_embeddings=args['normalize_embeddings'])
         with open(join(args['data_path'], args['dataset'], f'{split}_embeddings.pkl'), 'wb') as f:
             pickle.dump(embeddings, f)
 

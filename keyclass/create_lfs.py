@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 from scipy.spatial import distance
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
-from sklearn.semi_supervised import LabelPropagation
+# from sklearn.semi_supervised import LabelPropagation
 import torch
 import models
 

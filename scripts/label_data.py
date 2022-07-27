@@ -10,12 +10,12 @@ import argparse
 import torch
 import os
 from os.path import join, exists
-from config import Parser
 
 
-def run(args_cli):
-    parser = Parser(config_file_path=args_cli.config)
-    args = parser.parse()
+def run(args_cmd):
+
+    args = utils.Parser(config_file_path=args_cmd.config).parse()
+    print(args)
 
     # Load training data
     train_text = utils.fetch_data(dataset=args['dataset'], path=args['data_path'], split='train')
@@ -71,9 +71,9 @@ def run(args_cli):
         utils.log(metrics=training_metrics_with_gt, filename='label_model_with_ground_truth', 
             results_dir=args['results_path'], split='train')
 
-if __name__ == "__main__":
-    parser_cmd = argparse.ArgumentParser()
-    parser_cmd.add_argument('--config', default='../default_config.yml', help='Configuration file')
-    args_cmd = parser_cmd.parse_args()
+# if __name__ == "__main__":
+#     parser_cmd = argparse.ArgumentParser()
+#     parser_cmd.add_argument('--config', default='../default_config.yml', help='Configuration file')
+#     args_cmd = parser_cmd.parse_args()
 
-    run(args_cmd)
+#     run(args_cmd)
