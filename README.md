@@ -3,8 +3,6 @@ Classifying Unstructured Clinical Notes via Automatic Weak Supervision --->
 
 # TODOs:
 - [ ] Make a quick logo
-- [ ] Add tutorial(s)
-- [ ] Add the 1-3 line code snippet
 - [ ] Complete Readme
 - [ ] Make a base class for the encoders. The custom encoder class is iffy now
 - [ ] Add __str__ methods for each of the classes
@@ -15,6 +13,7 @@ Classifying Unstructured Clinical Notes via Automatic Weak Supervision --->
 
 
 # Get started with tutorials
+  - Run this [script](https://github.com/autonlab/KeyClass/blob/main/scripts/get_data.sh) to download the datasets
   - [TUTORIAL: simple example on dbpedia (can be easily changed)](https://github.com/autonlab/KeyClass/blob/main/scripts/example_train.ipynb)
 
 
