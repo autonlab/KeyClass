@@ -50,6 +50,7 @@ $ python run_all.py --config../config_files/config_agnews.yml
 $ python run_all.py --config../config_files/config_dbpedia.yml
 $ python run_all.py --config../config_files/config_amazon.yml
 ```
+Additionally, we have released our [pretrained models](https://github.com/autonlab/KeyClass/releases/tag/v1.0). Please see the tutorial notebook above on evaluating trained models.
 
 # Citation
 ```
