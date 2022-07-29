@@ -31,7 +31,7 @@
 ## `KeyClass` Outperforms Advanced Weakly Supervised Models
 
 <p align="center">
-<img height ="150px" src="assets/result_table.png">
+<img height ="120px" src="assets/result_table.png">
 </p>
 
 **Table 1.    Classification Accuracy.** `KeyClass` outperforms state-of-the-art weakly supervised methods on 4 real-world text classification datasets. We report our model’s accuracy with a 95% bootstrap confidence intervals. Results for Dataless, WeSTClass,
@@ -47,7 +47,6 @@ To download the datasets used in the paper, run this [script](https://github.com
 <a id="tutorial"></a>
 ## Tutorial
 To familiarize yourself with `KeyClass`, please go through the following tutorial which trains a text classifier from scratch on the DBpedia dataset.
-- [TUTORIAL: simple example on dbpedia](https://github.com/autonlab/KeyClass/blob/main/scripts/example_train.ipynb)
 
 <a id="installation"></a>
 ## Installation
