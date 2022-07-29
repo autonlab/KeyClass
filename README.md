@@ -1,14 +1,3 @@
-<!--- # KeyClass
-Classifying Unstructured Clinical Notes via Automatic Weak Supervision --->
-
-# TODOs:
-- [ ] Make a quick logo
-- [ ] Complete Readme
-- [ ] Make a base class for the encoders. The custom encoder class is iffy now
-- [ ] Add __str__ methods for each of the classes
-
-----
-
 `KeyClass` is a data-centric AI package for text classification withe label-names (and descriptions) only.
 
 
