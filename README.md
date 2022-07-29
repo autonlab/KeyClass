@@ -1,14 +1,19 @@
-`KeyClass` is a data-centric AI package for text classification withe label-names (and descriptions) only.
+# KeyClass: Text Classification with Label-Descriptions Only
 
+`KeyClass` is a general weakly-supervised text classification framework that learns from *class-label descriptions only*, without the need to use any human-labeled documents. It leverages the linguistic domain knowledge stored within pre-trained language models and the data programming framework to assign code labels to individual texts. We demonstrate the efficacy and flexibility of our method by comparing it to state-of-the-art weak text classifiers across four real-world text classification datasets.
 
-# Get started with tutorials
+Code for the paper [Classifying Unstructured Clinical Notes via Automatic Weak Supervision](https://arxiv.org/abs/2206.12088).
+
+----
+
+## Get started with tutorials
   - Run this [script](https://github.com/autonlab/KeyClass/blob/main/scripts/get_data.sh) to download the datasets
   - [TUTORIAL: simple example on dbpedia (can be easily changed)](https://github.com/autonlab/KeyClass/blob/main/scripts/example_train.ipynb)
 
 
 ----
 
-# Installation
+## Installation
 
 Python 3.8+ is  supported. Results were originally ran on Linux. 
 
@@ -41,7 +46,8 @@ $ python run_all.py --config../config_files/config_amazon.yml
 ```
 Additionally, we have released our [pretrained models](https://github.com/autonlab/KeyClass/releases/tag/v1.0). Please see the tutorial notebook above on evaluating trained models.
 
-# Citation
+## Citation
+If you use our code please cite the following paper. 
 ```
 @article{gao2022classifying,
   title={Classifying Unstructured Clinical Notes via Automatic Weak Supervision},
@@ -51,6 +57,10 @@ Additionally, we have released our [pretrained models](https://github.com/autonl
   organization={PMLR}
 }
 ```
+
+## License
+
+MIT License
 
 Copyright (c) 2022 Carnegie Mellon University, Auton Lab.
 
@@ -62,3 +72,5 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 See [MIT LICENSE](https://github.com/autonlab/KeyClass/blob/main/LICENSE) for details.
 
+<img align="right" height ="120px" src="https://www.cs.cmu.edu/~chiragn/cmu_logo.jpeg">
+<img align="right" height ="110px" src="https://www.cs.cmu.edu/~chiragn/auton_logo.png"> 
