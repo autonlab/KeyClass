@@ -1,6 +1,6 @@
 # KeyClass: Text Classification with Label-Descriptions Only
 
-`KeyClass` is a general weakly-supervised text classification framework that learns from *class-label descriptions only*, without the need to use any human-labeled documents. It leverages the linguistic domain knowledge stored within pre-trained language models and the data programming framework to assign code labels to individual texts. We demonstrate the efficacy and flexibility of our method by comparing it to state-of-the-art weak text classifiers across four real-world text classification datasets.
+`KeyClass` is a general weakly-supervised text classification framework that learns from *class-label descriptions only*, without the need to use any human-labeled documents. It leverages the linguistic domain knowledge stored within pre-trained language models and the data programming framework to assign labels to documents. We demonstrate the efficacy and flexibility of our method by comparing it to state-of-the-art weak text classifiers across four real-world text classification datasets.
 
 Code for the paper [Classifying Unstructured Clinical Notes via Automatic Weak Supervision](https://arxiv.org/abs/2206.12088).
 
@@ -8,8 +8,7 @@ Code for the paper [Classifying Unstructured Clinical Notes via Automatic Weak S
 
 ## Get started with tutorials
   - Run this [script](https://github.com/autonlab/KeyClass/blob/main/scripts/get_data.sh) to download the datasets
-  - [TUTORIAL: simple example on dbpedia (can be easily changed)](https://github.com/autonlab/KeyClass/blob/main/scripts/example_train.ipynb)
-
+  - [TUTORIAL: simple example on dbpedia](https://github.com/autonlab/KeyClass/blob/main/scripts/example_train.ipynb)
 
 ----
 
