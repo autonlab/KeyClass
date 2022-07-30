@@ -46,7 +46,7 @@ To download the datasets used in the paper, run this [script](https://github.com
 
 <a id="tutorial"></a>
 ## Tutorial
-To familiarize yourself with `KeyClass`, please go through the following tutorial which trains a text classifier from scratch on the DBpedia dataset.
+To familiarize yourself with `KeyClass`, please go through the following [tutorial](https://github.com/autonlab/KeyClass/blob/main/tutorials/Tutorial%20on%20DBpedia.ipynb) which trains a text classifier from scratch on the DBpedia dataset.
 
 <a id="installation"></a>
 ## Installation
