@@ -67,7 +67,7 @@ $ conda install jupyter notebook
 ```
 Alternatively, we have also provided the conda .yaml file, so the environment can be recreated using the following steps:
 ```
-$ conda env create -f scripts/conda.yaml
+$ conda env create -f scripts/environment.yaml
 $ conda activate keyclass
 ```
 
