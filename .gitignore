@@ -1,3 +1,9 @@
+# Ignore folders
+datasets/*
+models/*
+dev_scripts/*
+results/*
+
 # Repository specific stuff
 .txt
 .pkl
