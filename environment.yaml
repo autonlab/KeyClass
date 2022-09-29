@@ -11,4 +11,3 @@ dependencies:
   - jupyter
   - matplotlib
   - slycot
-prefix: /zfsauton2/home/mgoswami/anaconda3/envs/text
