@@ -1,8 +1,9 @@
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-![visitors](https://visitor-badge.glitch.me/badge?page_id=autonlab/KeyClass)
-&nbsp;&nbsp;&nbsp;
+<h1 align="center">KeyClass: Text Classification with Label-Descriptions Only</h1>
 
-# KeyClass: Text Classification with Label-Descriptions Only
+<p align="center">
+<img alt="License" src="https://img.shields.io/badge/License-MIT-yellow.svg">
+<img alt="Visitors" src="https://visitor-badge.glitch.me/badge?page_id=autonlab/KeyClass">
+</p>
 
 `KeyClass` is a general weakly-supervised text classification framework that learns from *class-label descriptions only*, without the need to use any human-labeled documents. It leverages the linguistic domain knowledge stored within pre-trained language models and the data programming framework to assign labels to documents. We demonstrate the efficacy and flexibility of our method by comparing it to state-of-the-art weak text classifiers across four real-world text classification datasets.
 
